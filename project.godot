@@ -6,19 +6,19 @@
 ;   [section] ; section goes between []
 ;   param=value ; assign values to parameters
 
-config_version=4
+config_version=5
 
-_global_script_classes=[ {
+_global_script_classes=[{
 "base": "Reference",
-"class": "GutHookScript",
-"language": "GDScript",
+"class": &"GutHookScript",
+"language": &"GDScript",
 "path": "res://addons/gut/hook_script.gd"
 }, {
 "base": "Node",
-"class": "GutTest",
-"language": "GDScript",
+"class": &"GutTest",
+"language": &"GDScript",
 "path": "res://addons/gut/test.gd"
-} ]
+}]
 _global_script_class_icons={
 "GutHookScript": "",
 "GutTest": ""
@@ -29,6 +29,7 @@ _global_script_class_icons={
 config/name="Gut"
 run/main_scene="res://scenes/main.tscn"
 config/icon="res://icon.png"
+config/features=PackedStringArray("4.0")
 
 [autoload]
 
@@ -41,7 +42,7 @@ gdscript/warnings/exclude_addons=false
 
 [editor_plugins]
 
-enabled=PoolStringArray( "res://addons/gut/plugin.cfg" )
+enabled=PackedStringArray()
 
 [network]
 

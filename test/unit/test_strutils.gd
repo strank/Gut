@@ -33,7 +33,7 @@ class TestType2Str:
 		assert_eq(strutils.type2str(dm), str(dm) + '(double_me.gd)')
 
 	func test_scene():
-		var scene = autofree(DoubleMeScene.instance())
+		var scene = autofree(DoubleMeScene.instantiate())
 		assert_eq(strutils.type2str(scene),  str(scene, '(double_me_scene.gd)'))
 
 	func test_file_instance():
@@ -102,7 +102,7 @@ class TestType2Str:
 		assert_eq(strutils.type2str(null), str(null))
 
 	func test_object_null():
-		var scene = autofree(load(DOUBLE_ME_SCENE_PATH).instance())
+		var scene = autofree(load(DOUBLE_ME_SCENE_PATH).instantiate())
 		assert_eq(strutils.type2str(scene.get_parent()), 'Null')
 
 	# currently does not print the inner class, maybe later.
@@ -123,7 +123,7 @@ class TestType2Str:
 		print(gut.get_orphan_counter().orphan_count(), ' t-1')
 		var a = Node
 		print(gut.get_orphan_counter().orphan_count(), ' t-2')
-		var txt = strutils.type2str(a)
+		var _txt = strutils.type2str(a)
 		print(gut.get_orphan_counter().orphan_count(), ' t-3')
 		assert_no_new_orphans()
 

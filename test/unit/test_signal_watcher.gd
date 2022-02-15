@@ -206,7 +206,7 @@ func test_can_watch_script_signal_explicitly():
 func test_can_see_script_signals_emit():
 	var script_signaler = ScriptSignalObject.new()
 	gr.sw.watch_signals(script_signaler)
-	script_signaler.emit_signal('script_signal')
+	script_signaler.script_signal.emit()
 	assert_true(gr.sw.did_emit(script_signaler, 'script_signal'))
 
 # ####################
@@ -242,7 +242,7 @@ func test_clearing_ignores_freed_objecdts():
 	add_child(gr.so)
 	gr.sw.watch_signals(gr.so)
 	gr.so.free()
-	yield(yield_for(0.5), YIELD)
+	await yield_for(0.5).timeout
 	gr.sw.clear()
 	end_test()
 

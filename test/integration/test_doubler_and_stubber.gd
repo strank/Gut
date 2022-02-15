@@ -87,7 +87,7 @@ func test_can_stub_doubled_scenes():
 	var sp = StubParams.new(DOUBLE_ME_SCENE_PATH, 'return_hello')
 	sp.to_return('world')
 	gr.stubber.add_stub(sp)
-	var inst = autofree(gr.doubler.double_scene(DOUBLE_ME_SCENE_PATH).instance())
+	var inst = autofree(gr.doubler.double_scene(DOUBLE_ME_SCENE_PATH).instantiate())
 	assert_eq(inst.return_hello(), 'world')
 
 func test_when_stubbed_to_call_super_then_super_is_called():

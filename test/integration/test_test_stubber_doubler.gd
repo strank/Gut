@@ -49,7 +49,7 @@ class TestBasics:
 		assert_eq(gr.test.get_pass_count(), 1)
 
 	func test_can_override_strategy_when_doubling_scene():
-		var doubled = gr.test.double_scene(DOUBLE_ME_SCENE_PATH, DOUBLE_STRATEGY.FULL).instance()
+		var doubled = gr.test.double_scene(DOUBLE_ME_SCENE_PATH, DOUBLE_STRATEGY.FULL).instantiate()
 		autofree(doubled)
 		doubled.is_blocking_signals()
 		gr.test.assert_called(doubled, 'is_blocking_signals')
@@ -57,7 +57,7 @@ class TestBasics:
 		pause_before_teardown()
 
 	func test_when_strategy_is_partial_then_supers_are_NOT_spied_in_scenes():
-		var doubled = gr.test.double_scene(DOUBLE_ME_SCENE_PATH, DOUBLE_STRATEGY.PARTIAL).instance()
+		var doubled = gr.test.double_scene(DOUBLE_ME_SCENE_PATH, DOUBLE_STRATEGY.PARTIAL).instantiate()
 		autofree(doubled)
 		doubled.is_blocking_signals()
 		gr.test.assert_not_called(doubled, 'is_blocking_signals')
@@ -128,7 +128,7 @@ class TestIgnoreMethodsWhenDoubling:
 
 	func test_when_ignoring_scene_methods_they_are_not_doubled():
 		_test.ignore_method_when_doubling(load(DOUBLE_ME_SCENE_PATH), 'return_hello')
-		var m_inst = _test.double(DOUBLE_ME_SCENE_PATH).instance()
+		var m_inst = _test.double(DOUBLE_ME_SCENE_PATH).instantiate()
 		autofree(m_inst)
 		m_inst.return_hello()
 		# since it is ignored it should not have been caught by the stubber
@@ -151,7 +151,7 @@ class TestTestsSmartDoubleMethod:
 		assert_eq(inst.__gut_metadata_.path, DOUBLE_ME_PATH)
 
 	func test_when_passed_a_scene_it_doubles_a_scene():
-		var inst = _test.double(DOUBLE_ME_SCENE_PATH).instance()
+		var inst = _test.double(DOUBLE_ME_SCENE_PATH).instantiate()
 		assert_eq(inst.__gut_metadata_.path, DOUBLE_ME_SCENE_PATH)
 
 	func test_when_passed_script_and_inner_it_doulbes_it():
@@ -165,7 +165,7 @@ class TestTestsSmartDoubleMethod:
 		assert_called(inst, 'get_instance_id')
 
 	func test_full_strategy_used_with_scenes():
-		var inst = _test.double(DOUBLE_ME_SCENE_PATH, DOUBLE_STRATEGY.FULL).instance()
+		var inst = _test.double(DOUBLE_ME_SCENE_PATH, DOUBLE_STRATEGY.FULL).instantiate()
 		inst.get_instance_id()
 		assert_called(inst, 'get_instance_id')
 
@@ -179,7 +179,7 @@ class TestTestsSmartDoubleMethod:
 		assert_eq(inst.__gut_metadata_.path, DOUBLE_ME_PATH)
 
 	func test_when_passing_a_class_of_a_scene_it_doubles_it():
-		var inst = _test.double(DoubleMeScene).instance()
+		var inst = _test.double(DoubleMeScene).instantiate()
 		assert_eq(inst.__gut_metadata_.path, DOUBLE_ME_SCENE_PATH)
 
 	func test_when_passing_a_class_of_an_inner_it_doubles_it():
@@ -228,7 +228,7 @@ class TestPartialDoubleMethod:
 	# TODO this test is tempramental.  It has something to do with the loading
 	# of the doubles I think.  Should be fixed.
 	func test_partial_double_scene():
-		var inst = _test.partial_double(DOUBLE_ME_SCENE_PATH).instance()
+		var inst = _test.partial_double(DOUBLE_ME_SCENE_PATH).instantiate()
 		autofree(inst)
 		assert_eq(inst.return_hello(), 'hello', 'sometimes fails, should be fixed.')
 
@@ -242,7 +242,7 @@ class TestPartialDoubleMethod:
 		assert_eq(inst.get_value(), null)
 
 	func test_double_scene_not_a_partial():
-		var inst = _test.double(DOUBLE_ME_SCENE_PATH).instance()
+		var inst = _test.double(DOUBLE_ME_SCENE_PATH).instantiate()
 		autofree(inst)
 		assert_eq(inst.return_hello(), null)
 
@@ -273,7 +273,7 @@ class TestPartialDoubleMethod:
 
 	# Test issue 147
 	func test_can_double_file():
-		var f = File.new()
+		var _f = File.new() # TODO: ??? unused
 		var inst = _test.partial_double(File)
 		assert_not_null(inst)
 
@@ -327,7 +327,7 @@ class TestOverridingParameters:
 
 		var inst =  _test.double(Node).new()
 		add_child_autofree(inst)
-		var ret_val = inst.rpc_id(1, 'foo', '3', '4', '5')
+		var _ret_val = inst.rpc_id(1, 'foo', '3', '4', '5') # TODO: unused
 		_test.assert_called(inst, 'rpc_id', [1, 'foo', '3', '4', '5'])
 		assert_eq(_test.get_pass_count(), 1)
 
@@ -350,7 +350,7 @@ class TestOverridingParameters:
 
 	func test_setting_less_parameters_does_not_affect_anything():
 		var TestClass = load(DEFAULT_PARAMS_PATH)
-		var s = _test.stub(TestClass, 'return_passed').param_count(0)
+		var _s = _test.stub(TestClass, 'return_passed').param_count(0) # TODO: unused
 
 		var inst =  _test.partial_double(DEFAULT_PARAMS_PATH).new()
 		var ret_val = inst.return_passed('a', 'b')

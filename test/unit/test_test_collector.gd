@@ -37,7 +37,6 @@ class TestTestCollector:
 
 	func test_finds_inner_classes():
 		gr.tc.add_script(SCRIPTS_ROOT + 'has_inner_class.gd')
-		var found = false
 
 		var inner_path = SCRIPTS_ROOT + 'has_inner_class.gd.TestClass1'
 		assert_true(gr.tc.has_script(inner_path), 'should have ' + inner_path)
@@ -55,7 +54,7 @@ class TestTestCollector:
 		gr.tc.set_test_class_prefix('DifferentPrefix')
 		gr.tc.add_script(SCRIPTS_ROOT + 'has_inner_class.gd')
 		assert_true(gr.tc.has_script(SCRIPTS_ROOT + 'has_inner_class.gd.DifferentPrefixClass'),
-		 'shold have DifferentPrefixClass')
+				'shold have DifferentPrefixClass')
 
 	func test_ignores_classes_that_match_but_do_not_extend_test():
 		gr.tc.set_test_class_prefix('DoesNotExtend')
@@ -157,7 +156,7 @@ class __TestExportImport:
 		tc_export.export_tests(EXPORT_FILE)
 
 		var tc_import = TestCollector.new()
-		var worked = tc_import.import_tests(EXPORT_FILE)
+		var _worked = tc_import.import_tests(EXPORT_FILE)
 
 		assert_eq(tc_import.scripts[0].tests.size(), 2, 'has correct size')
 		var names = _utils.extract_property_from_array(tc_import.scripts[0].tests, 'name')

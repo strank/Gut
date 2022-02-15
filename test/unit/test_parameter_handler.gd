@@ -23,15 +23,15 @@ func test_is_done_is_false_by_default():
 
 func test_is_done_is_false_when_parameters_remain():
 	var ph = ParameterHandler.new([1, 2, 3])
-	var results = ph.next_parameters()
-	results = ph.next_parameters()
+	var _results = ph.next_parameters() # TODO: unused
+	_results = ph.next_parameters()
 	assert_false(ph.is_done())
 
 func test_is_done_is_true_when_parameters_exhaused():
 	var ph = ParameterHandler.new([1, 2, 3])
-	var results = ph.next_parameters()
-	results = ph.next_parameters()
-	results = ph.next_parameters()
+	var _results = ph.next_parameters() # TODO: unused
+	_results = ph.next_parameters()
+	_results = ph.next_parameters()
 	assert_true(ph.is_done())
 
 func test_has_logger():

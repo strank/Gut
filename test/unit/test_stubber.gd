@@ -68,7 +68,7 @@ func test_getting_return_for_thing_that_does_not_exist_returns_null():
 	assert_eq(value, null)
 
 func test_can_call_super_for_dne_generates_info():
-	var value = gr.stubber.should_call_super('nothing', 'something')
+	var _value = gr.stubber.should_call_super('nothing', 'something')
 	assert_eq(gr.stubber.get_logger().get_infos().size(), 1)
 
 func test_can_get_return_value_for_class_using_path():
@@ -161,7 +161,7 @@ func test_withStubParams_can_get_return_based_on_complex_parameters():
 func test_when_parameters_do_not_match_any_stub_then_warning_generated():
 	var sp = StubParamsClass.new('thing', 'method').to_return(10).when_passed('a')
 	gr.stubber.add_stub(sp)
-	var result = gr.stubber.get_return('thing', 'method', ['b'])
+	var _result = gr.stubber.get_return('thing', 'method', ['b'])
 	assert_eq(gr.stubber.get_logger().get_warnings().size(), 1)
 
 func test_withStubParams_param_layering_works():

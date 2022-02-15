@@ -1,7 +1,7 @@
 extends SceneTree
 
-func print(p1='', p2 = '', p3='', p4='', p5=''):
-    .print('custom_print:  ', p1, p2, p3, p4, p5)
+#func print(p1='', p2 = '', p3='', p4='', p5=''):
+#    super('custom_print:  ', p1, p2, p3, p4, p5)
 
 
 func _init():
@@ -12,9 +12,9 @@ func _init():
     sorted_names.sort()
     print(sorted_names)
     print(print('hello world'))
-    var ref = funcref(self, 'print')
-    print(ref, ' = ', ref.is_valid())
+    # var ref = funcref(self, 'print')
+    # print(ref, ' = ', ref.is_valid())
 
-    ref.call_func('from ref')
+    # ref.call_func('from ref')
     quit()
 

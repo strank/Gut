@@ -420,9 +420,9 @@ func test_when_inner_class_skipped_none_of_the_before_after_are_called():
 	for i in range(instances.size()):
 		var dict = inst2dict(instances[i])
 		print('subpath  = ', dict['@subpath'])
-		if(dict['@subpath'] == 'TestInner1'):
+		if(dict['@subpath'] == NodePath('TestInner1')):
 			inner1_inst = instances[i]
-		elif(dict['@subpath'] == 'TestInner2'):
+		elif(dict['@subpath'] == NodePath('TestInner2')):
 			inner2_inst = instances[i]
 
 	assert_eq(inner1_inst.before_all_calls, 1, 'TestInner1 before_all calls')
@@ -446,7 +446,7 @@ func test_when_pre_hook_set_script_instance_is_is_retrievable():
 	assert_is(gr.test_gut.get_pre_run_script_instance(), PreRunScript)
 
 func test_when_pre_hook_set_run_method_is_called():
-	var  PreRunScript = load('res://test/resources/pre_run_script.gd')
+	var _PreRunScript = load('res://test/resources/pre_run_script.gd')
 	gr.test_gut.set_pre_run_script('res://test/resources/pre_run_script.gd')
 	gr.test_gut.add_script(SAMPLES_DIR + 'test_sample_all_passed.gd')
 	gr.test_gut.test_scripts()
@@ -477,7 +477,7 @@ func test_post_hook_is_run_after_tests():
 	gr.test_gut.set_post_run_script('res://test/resources/post_run_script.gd')
 	gr.test_gut.add_script(SAMPLES_DIR + 'test_sample_all_passed.gd')
 	gr.test_gut.test_scripts()
-	yield(yield_for(1), YIELD)
+	await yield_for(1).timeout
 	assert_is(gr.test_gut._post_run_script_instance, PostRunScript, 'Instance is set')
 	assert_true(gr.test_gut._post_run_script_instance.run_called, 'run was called')
 
@@ -493,7 +493,7 @@ func test_when_post_hook_set_to_invalid_script_no_tests_are_ran():
 # Parameterized Test Tests
 # ------------------------------
 const TEST_WITH_PARAMETERS = 'res://test/resources/parsing_and_loading_samples/test_with_parameters.gd'
-func _get_test_script_object_of_type(the_gut, the_type):
+func _get_test_script_object_of_type(_the_gut, the_type):
 	var objs = gr.test_gut._test_script_objects
 	var obj = null
 	for i in range(objs.size()):
@@ -535,7 +535,7 @@ func test_parameterized_test_that_yield_are_called_correctly():
 	gr.test_gut.add_script(TEST_WITH_PARAMETERS)
 	gr.test_gut.set_unit_test_name('test_three_values_and_a_yield')
 	gr.test_gut.test_scripts()
-	yield(yield_to(gr.test_gut, 'test_finished', 10), YIELD)
+	await yield_to(gr.test_gut, 'test_finished', 10).timeout
 	assert_eq(gr.test_gut.get_pass_count(), 3)
 
 func test_parameterized_test_calls_before_each_before_each_test():

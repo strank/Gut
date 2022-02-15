@@ -55,8 +55,8 @@ class InputQueueItem:
 	extends Node
 
 	var events = []
-	var time_delay = null
-	var frame_delay = null
+	var time_delay = 0
+	var frame_delay = 0
 	var _waited_frames = 0
 	var _is_ready = false
 	var _delay_started = false
@@ -65,11 +65,11 @@ class InputQueueItem:
 
 	# TODO should this be done in _physics_process instead or should it be
 	# configurable?
-	func _physics_process(delta):
+	func _physics_process(_delta):
 		if(frame_delay > 0 and _delay_started):
 			_waited_frames += 1
 			if(_waited_frames >= frame_delay):
-				emit_signal("event_ready")
+				event_ready.emit()
 
 	func _init(t_delay, f_delay):
 		time_delay = t_delay
@@ -78,7 +78,7 @@ class InputQueueItem:
 
 	func _on_time_timeout():
 		_is_ready = true
-		emit_signal("event_ready")
+		event_ready.emit()
 
 	func _delay_timer(t):
 		return Engine.get_main_loop().root.get_tree().create_timer(t)
@@ -90,7 +90,7 @@ class InputQueueItem:
 		_delay_started = true
 		if(time_delay > 0):
 			var t = _delay_timer(time_delay)
-			t.connect("timeout", self, "_on_time_timeout")
+			t.timeout.connect(_on_time_timeout)
 
 # ##############################################################################
 #
@@ -110,8 +110,8 @@ var _last_mouse_motion = null
 # used by hold_for and echo.
 var _last_event = null
 
-# indexed by scancode, each entry contains a boolean value indicating the
-# last emitted "pressed" value for that scancode.
+# indexed by keycode, each entry contains a boolean value indicating the
+# last emitted "pressed" value for that keycode.
 var _pressed_keys = {}
 var _pressed_actions = {}
 var _pressed_mouse_buttons = {}
@@ -126,9 +126,9 @@ func _init(r=null):
 
 func _send_event(event):
 	if(event is InputEventKey):
-		if((event.pressed and !event.echo) and is_key_pressed(event.scancode)):
+		if((event.pressed and !event.echo) and is_key_pressed(event.keycode)):
 			_lgr.warn(str("InputSender:  key_down called for ", event.as_text(), " when that key is already pressed.  ", INPUT_WARN))
-		_pressed_keys[event.scancode] = event.pressed
+		_pressed_keys[event.keycode] = event.pressed
 	elif(event is InputEventAction):
 		if(event.pressed and is_action_pressed(event.action)):
 			_lgr.warn(str("InputSender:  action_down called for ", event.action, " when that action is already pressed.  ", INPUT_WARN))
@@ -169,13 +169,13 @@ func _on_queue_item_ready(item):
 
 	if(_input_queue.size() == 0):
 		_next_queue_item = null
-		emit_signal("idle")
+		idle.emit()
 	else:
 		_input_queue[0].start()
 
 
 func _add_queue_item(item):
-	item.connect("event_ready", self, "_on_queue_item_ready", [item])
+	item.event_ready.connect(_on_queue_item_ready.bind(item))
 	_next_queue_item = item
 	_input_queue.append(item)
 	Engine.get_main_loop().root.add_child(item)
@@ -194,7 +194,7 @@ func get_receivers():
 func wait(t):
 	if(typeof(t) == TYPE_STRING):
 		var suffix = t.substr(t.length() -1, 1)
-		var val = float(t.rstrip('s').rstrip('f'))
+		var val = t.rstrip('s').rstrip('f').to_float()
 
 		if(suffix.to_lower() == 's'):
 			wait_secs(val)
@@ -267,7 +267,7 @@ func mouse_left_button_up(position, global_position=null):
 
 func mouse_double_click(position, global_position=null):
 	var event = InputFactory.mouse_double_click(position, global_position)
-	event.doubleclick = true
+	event.double_click = true
 	_send_or_record_event(event)
 	return self
 
@@ -356,7 +356,7 @@ func is_idle():
 
 func is_key_pressed(which):
 	var event = InputFactory.key_up(which)
-	return _pressed_keys.has(event.scancode) and _pressed_keys[event.scancode]
+	return _pressed_keys.has(event.keycode) and _pressed_keys[event.keycode]
 
 func is_action_pressed(which):
 	return _pressed_actions.has(which) and _pressed_actions[which]

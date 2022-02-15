@@ -57,6 +57,8 @@ class ScriptMethods:
 		'_get', # probably
 		'emit_signal', # can't handle extra parameters to be sent with signal.
 		'draw_mesh', # issue with one parameter, value is `Null((..), (..), (..))``
+		'draw_texture', # issue with Color parameter
+		'draw_texture_rect',
 		'_to_string', # nonexistant function ._to_string
 		'_get_minimum_size', # Nonexistent function _get_minimum_size
 	]
@@ -109,7 +111,6 @@ class ScriptMethods:
 class ObjectInfo:
 	var _path = null
 	var _subpaths = []
-	var _utils = load('res://addons/gut/utils.gd').get_instance()
 	var _lgr = _utils.get_logger()
 	var _method_strategy = null
 	var make_partial_double = false
@@ -157,7 +158,7 @@ class ObjectInfo:
 
 
 	func get_subpath():
-		return PoolStringArray(_subpaths).join('/')
+		return '/'.join(PackedStringArray(_subpaths))
 
 
 	func has_subpath():
@@ -292,17 +293,17 @@ class FileOrString:
 	func open(path, mode):
 		_path = path
 		if(_do_file):
-			return .open(path, mode)
+			return super(path, mode)
 		else:
 			return OK
 
 	func close():
 		if(_do_file):
-			return .close()
+			return super()
 
 	func store_string(s):
 		if(_do_file):
-			.store_string(s)
+			super(s)
 		_contents += s
 
 	func get_contents():
@@ -334,7 +335,7 @@ class PackedSceneDouble:
 		_script = obj
 
 	func instance(edit_state=0):
-		var inst = _scene.instance(edit_state)
+		var inst = _scene.instantiate(edit_state)
 		if(_script !=  null):
 			inst.set_script(_script)
 		return inst
@@ -469,7 +470,7 @@ func _double_scene_and_script(scene_info):
 	var to_return = PackedSceneDouble.new()
 	to_return.load_scene(scene_info.get_path())
 
-	var inst = load(scene_info.get_path()).instance()
+	var inst = load(scene_info.get_path()).instantiate()
 	var script_path = null
 	if(inst.get_script()):
 		script_path = inst.get_script().get_path()
@@ -491,7 +492,7 @@ func _get_methods(object_info):
 	var script_methods = ScriptMethods.new()
 	var methods = obj.get_method_list()
 
-	if(!object_info.is_singleton() and !(obj is Reference)):
+	if(!object_info.is_singleton() and !(obj is RefCounted)):
 		obj.free()
 
 	# first pass is for local methods only
@@ -507,7 +508,8 @@ func _get_methods(object_info):
 		# 65 is a magic number for methods in script, though documentation
 		# says 64.  This picks up local overloads of base class methods too.
 		# See MethodFlags in @GlobalScope
-		elif(methods[i].flags == 65 and !_ignored_methods.has(object_info.get_path(), methods[i]['name'])):
+		elif(methods[i].flags == 65 and !_ignored_methods.has(object_info.get_path(), methods[i]['name'])
+				and !methods[i]['name'].begins_with('@')):
 			script_methods.add_local_method(methods[i])
 
 	if(object_info.get_method_strategy() == _utils.DOUBLE_STRATEGY.FULL):
@@ -515,7 +517,8 @@ func _get_methods(object_info):
 		for j in range(methods.size()):
 			# 65 is a magic number for methods in script, though documentation
 			# says 64.  This picks up local overloads of base class methods too.
-			if(methods[j].flags != 65 and !_ignored_methods.has(object_info.get_path(), methods[j]['name'])):
+			if(methods[j].flags != 65 and !_ignored_methods.has(object_info.get_path(), methods[j]['name'])
+					and !methods[i]['name'].begins_with('@')):
 				script_methods.add_built_in_method(methods[j])
 
 	return script_methods
@@ -714,7 +717,6 @@ func partial_double_singleton(name):
 func clear_output_directory():
 	if(!_make_files):
 		return false
-
 	var did = false
 	if(_output_dir.find('user://') == 0):
 		var d = Directory.new()
@@ -723,7 +725,7 @@ func clear_output_directory():
 		# directory becomes res:// and things go on normally and gut clears out
 		# out res:// which is SUPER BAD.
 		if(result == OK):
-			d.list_dir_begin(true)
+			d.list_dir_begin()
 			var f = d.get_next()
 			while(f != ''):
 				d.remove(f)

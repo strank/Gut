@@ -22,12 +22,14 @@ var _desc_things = 'somethings'
 # -------- comapre_result.gd "interface" ---------------------
 func set_are_equal(val):
 	_block_set('are_equal', val)
+	#__are_equal = val
 
 func get_are_equal():
-	return are_equal()
+	return check_are_equal()
 
 func set_summary(val):
 	_block_set('summary', val)
+	#__summary = val
 
 func get_summary():
 	return summarize()
@@ -40,9 +42,9 @@ func  get_total_count():
 
 func get_short_summary():
 	var text = str(_strutils.truncate_string(str(_value_1), 50),
-		' ', _compare.get_compare_symbol(are_equal()), ' ',
+		' ', _compare.get_compare_symbol(are_equal), ' ',
 		_strutils.truncate_string(str(_value_2), 50))
-	if(!are_equal()):
+	if(!are_equal):
 		text += str('  ', get_different_count(), ' of ', get_total_count(),
 			' ', _desc_things, ' do not match.')
 	return text
@@ -113,7 +115,7 @@ func _diff_dictionary(d1, d2):
 		if(!d2.has(key)):
 			differences[key] = _compare.simple(d1[key], _compare.MISSING, 'key')
 		else:
-			d2_keys.remove(d2_keys.find(key))
+			d2_keys.erase(key)
 
 			var result = null
 			if(_diff_type == DEEP):
@@ -131,19 +133,19 @@ func _diff_dictionary(d1, d2):
 
 
 func summarize():
-	var summary = ''
+	var result = ''
 
-	if(are_equal()):
-		summary = get_short_summary()
+	if(are_equal):
+		result = get_short_summary()
 	else:
 		var formatter = load('res://addons/gut/diff_formatter.gd').new()
 		formatter.set_max_to_display(max_differences)
-		summary = formatter.make_it(self)
+		result = formatter.make_it(self)
 
-	return summary
+	return result
 
 
-func are_equal():
+func check_are_equal():
 	if(!_valid):
 		return null
 	else:

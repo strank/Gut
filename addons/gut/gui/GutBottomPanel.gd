@@ -1,4 +1,4 @@
-tool
+@tool
 extends Control
 
 const RUNNER_JSON_PATH = 'res://.gut_editor_config.json'
@@ -19,7 +19,7 @@ var _panel_button = null
 var _last_selected_path = null
 
 
-onready var _ctrls = {
+@onready var _ctrls = {
 	output = $layout/RSplit/CResults/Output,
 	run_button = $layout/ControlBar/RunAll,
 	settings = $layout/RSplit/sc/Settings,
@@ -48,7 +48,7 @@ func _ready():
 	_set_font_size_for_rtl(_ctrls.output, _gut_config.options.panel_options.font_size)
 
 
-func _process(delta):
+func _process(_delta):
 	if(_is_running):
 		if(!_interface.is_playing_scene()):
 			_is_running = false
@@ -70,8 +70,8 @@ func _set_font(rtl, font_name, custom_name):
 	if(font_name == null):
 		rtl.set('custom_fonts/' + custom_name, null)
 	else:
-		var dyn_font = DynamicFont.new()
-		var font_data = DynamicFontData.new()
+		var dyn_font = Font.new()
+		var font_data = FontData.new()
 		font_data.font_path = 'res://addons/gut/fonts/' + font_name + '.ttf'
 		font_data.antialiased = true
 		dyn_font.font_data = font_data
@@ -109,16 +109,16 @@ func _is_test_script(script):
 
 
 func _update_last_run_label():
-	var text = ''
+	var _text = '' # TODO: variable never used!
 
 	if(	_gut_config.options.selected == null and
 		_gut_config.options.inner_class == null and
 		_gut_config.options.unit_test_name == null):
-		text = 'All'
+		_text = 'All'
 	else:
-		text = nvl(_gut_config.options.selected, '') + ' '
-		text += nvl(_gut_config.options.inner_class, '') + ' '
-		text += nvl(_gut_config.options.unit_test_name, '')
+		_text = nvl(_gut_config.options.selected, '') + ' '
+		_text += nvl(_gut_config.options.inner_class, '') + ' '
+		_text += nvl(_gut_config.options.unit_test_name, '')
 
 
 
@@ -233,10 +233,14 @@ func load_result_output():
 	_ctrls.output.scroll_to_line(_ctrls.output.get_line_count() -1)
 
 	var summary = get_file_as_text(RESULT_JSON)
-	var results = JSON.parse(summary)
-	if(results.error != OK):
+	
+	var json = JSON.new()
+	var error = json.parse(summary)
+
+	if(error != OK):
 		return
-	var summary_json = results.result['test_scripts']['props']
+	var result = json.get_data()
+	var summary_json = result['test_scripts']['props']
 	_ctrls.results.passing.text = str(summary_json.passing)
 	_ctrls.results.passing.get_parent().visible = true
 
@@ -270,14 +274,14 @@ func load_result_output():
 func set_current_script(script):
 	if(script):
 		if(_is_test_script(script)):
-			var file = script.resource_path.get_file()
+			var _file = script.resource_path.get_file() # TODO never used
 			_last_selected_path = script.resource_path.get_file()
 			_ctrls.run_at_cursor.activate_for_script(script.resource_path)
 
 
 func set_interface(value):
 	_interface = value
-	_interface.get_script_editor().connect("editor_script_changed", self, '_on_editor_script_changed')
+	_interface.get_script_editor().editor_script_changed.connect(_on_editor_script_changed)
 	_ctrls.run_at_cursor.set_script_editor(_interface.get_script_editor())
 	set_current_script(_interface.get_script_editor().get_current_script())
 

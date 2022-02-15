@@ -238,7 +238,7 @@ func print_all_info(thing):
 		print('  ', props[i].name, props[i])
 
 func _init():
-	var r = Reference.new()
+	var r = RefCounted.new()
 	var r2 = r
 	var r3 = r
 	var r4 = r
@@ -285,8 +285,8 @@ func _init():
 	#var obj = load('res://test/resources/doubler_test_objects/double_extends_window_dialog.gd').new()
 	#ExtendsNode2D.set_meta('gut_ignore', 'something')
 	#print_method_info(obj)
-	print_method_info(CodeTextEditor)
-	print(CodeTextEditor.new().get_property_list())
+	print_method_info(CodeEdit)
+	print(CodeEdit.new().get_property_list())
 	#print(obj.get_meta_list())
 	#print(ExtendsNode2D.get_meta_list())
 	#print_method_info(ExtendsNode2D)

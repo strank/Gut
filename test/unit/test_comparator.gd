@@ -83,17 +83,15 @@ class TestSimpleCompare:
 		assert_string_contains(result.summary, 'Cannot')
 		assert_string_contains(result.summary, '!=')
 
-	func test_comparing_equal_dictionaries_includes_disclaimer():
-		var d1 = {}
-		var d2 = d1
-		var result = _comparator.simple(d1, d2)
+	var equal_dicts = [[{1: 1}, {1: 1}], [{'a': 'a'}, {'a': 'a'}], [{}, {}]]
+	func test_comparing_equal_dictionaries(p=use_parameters(equal_dicts)):
+		var result = _comparator.simple(p[0], p[1])
 		assert_true(result.are_equal, result.summary)
-		assert_string_contains(result.summary, _comparator.DICTIONARY_DISCLAIMER)
 
-	func test_comparing_different_dictionaries_includes_disclaimer():
-		var result = _comparator.simple({}, {})
+	var not_equal_dicts = [[{1: 1}, {2: 2}], [{'a': 'a'}, {'b': 'b'}], [{}, {1: 1}]]
+	func test_comparing_different_dictionaries(p=use_parameters(not_equal_dicts)):
+		var result = _comparator.simple(p[0], p[1])
 		assert_false(result.are_equal, result.summary)
-		assert_string_contains(result.summary, _comparator.DICTIONARY_DISCLAIMER)
 
 	func test_comparing_arrays_returns_array_diff_simple_summary():
 		var result = _comparator.simple([1, 2], [3, 4])
@@ -157,13 +155,13 @@ class TestShallowCompare:
 		var result = _comparator.shallow({}, {'a':1})
 		assert_not_null(result.summary)
 
-	func test_comparing_dictionaries_does_not_include_sub_dictionaries():
+	func test_comparing_dictionaries_does_include_sub_dictionaries():
 		var result = _comparator.shallow({'a':{}}, {'a':{}})
-		assert_false(result.are_equal)
+		assert_true(result.are_equal)
 
-	func test_comparing_arrays_does_not_include_sub_dictionaries():
+	func test_comparing_arrays_does_include_sub_dictionaries():
 		var result = _comparator.shallow([{'a':1}], [{'a':1}])
-		assert_false(result.are_equal)
+		assert_true(result.are_equal)
 
 	func test_works_with_different_datatypes():
 		var result = _comparator.shallow({}, [])

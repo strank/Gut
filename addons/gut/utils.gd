@@ -44,7 +44,6 @@ static func INSTANCE_NAME():
 # if we don't have a main loop ready to go yet.
 # ------------------------------------------------------------------------------
 static func get_root_node():
-	var to_return = null
 	var main_loop = Engine.get_main_loop()
 	if(main_loop != null):
 		return main_loop.root
@@ -131,19 +130,21 @@ func _http_request_latest_version() -> void:
 	var http_request = HTTPRequest.new()
 	http_request.name = "http_request"
 	add_child(http_request)
-	http_request.connect("request_completed", self, "_on_http_request_latest_version_completed")
+	http_request.request_completed.connect(_on_http_request_latest_version_completed)
 	# Perform a GET request. The URL below returns JSON as of writing.
-	var error = http_request.request("https://api.github.com/repos/bitwes/Gut/releases/latest")
+	var _error = http_request.request("https://api.github.com/repos/bitwes/Gut/releases/latest")
 
-func _on_http_request_latest_version_completed(result, response_code, headers, body):
+func _on_http_request_latest_version_completed(result, __response_code, __headers, body):
 	if not result == HTTPRequest.RESULT_SUCCESS:
 		return
 
-	var response = parse_json(body.get_string_from_utf8())
+	var json = JSON.new()
+	var error = json.parse(body.get_string_from_utf8())
 	# Will print the user agent string used by the HTTPRequest node (as recognized by httpbin.org).
-	if response:
+	if error == OK:
+		var response = json.get_data()
 		if response.get("html_url"):
-			latest_version = Array(response.html_url.split("/")).pop_back().right(1)
+			latest_version = Array(response.html_url.split("/")).pop_back().right(-1) # gets rid of the "v"
 			if latest_version != version:
 				should_display_latest_version = true
 
@@ -176,7 +177,7 @@ func get_version_text():
 # Returns a nice string for erroring out when we have a bad Godot version.
 # ------------------------------------------------------------------------------
 func get_bad_version_text():
-	var ver = PoolStringArray(req_godot).join('.')
+	var ver = '.'.join(PackedStringArray(req_godot))
 	var info = Engine.get_version_info()
 	var gd_version = str(info.major, '.', info.minor, '.', info.patch)
 	return 'GUT ' + version + ' requires Godot ' + ver + ' or greater.  Godot version is ' + gd_version
@@ -314,7 +315,7 @@ func get_native_class_name(thing):
 	if(is_native_class(thing)):
 		var newone = thing.new()
 		to_return = newone.get_class()
-		if(!newone is Reference):
+		if(!newone is RefCounted):
 			newone.free()
 	return to_return
 

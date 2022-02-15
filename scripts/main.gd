@@ -88,7 +88,7 @@ func _run_all_tests():
 	# get an instance of gut
 	tester = get_node("Gut")
 
-	tester.connect('tests_finished', self, '_on_tests_finished')
+	tester.tests_finished.connect(_on_tests_finished)
 	tester.show()
 	tester.set_position(Vector2(100, 100))
 

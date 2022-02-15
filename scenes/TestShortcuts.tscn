@@ -6,7 +6,7 @@
 [sub_resource type="InputEventKey" id=1]
 control = true
 pressed = true
-scancode = 48
+keycode = 48
 
 [sub_resource type="ShortCut" id=2]
 shortcut = SubResource( 1 )

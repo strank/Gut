@@ -1,11 +1,23 @@
-[gd_resource type="Theme" load_steps=3 format=2]
+[gd_resource type="Theme" load_steps=3 format=3 uid="uid://wfjob2v0rskl"]
 
-[sub_resource type="DynamicFontData" id=9]
-font_path = "res://addons/gut/fonts/AnonymousPro-Regular.ttf"
+[sub_resource type="FontData" id="9"]
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
+cache/0/16/0/spacing_glyph = 0
+cache/0/16/0/spacing_space = 0
+cache/0/20/0/ascent = 0.0
+cache/0/20/0/descent = 0.0
+cache/0/20/0/underline_position = 0.0
+cache/0/20/0/underline_thickness = 0.0
+cache/0/20/0/scale = 1.0
+cache/0/20/0/spacing_glyph = 0
+cache/0/20/0/spacing_space = 0
 
-[sub_resource type="DynamicFont" id=10]
-size = 14
-font_data = SubResource( 9 )
+[sub_resource type="Font" id="10"]
+data/0 = SubResource( "9" )
 
 [resource]
-default_font = SubResource( 10 )
+default_font = SubResource( "10" )

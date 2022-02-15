@@ -44,7 +44,7 @@ class TestUseIsPassingInBeforeAll:
 	extends 'res://addons/gut/test.gd'
 
 	func before_all():
-		var is_it = is_passing()
+		var _is_it = is_passing()
 
 	func test_nothing():
 		pass_test('pass it')
@@ -53,7 +53,7 @@ class TestUseIsPassingInAfterAll:
 	extends 'res://addons/gut/test.gd'
 
 	func after_all():
-		var is_it = is_passing()
+		var _is_it = is_passing()
 
 	func test_nothing():
 		pass_test('pass it')
@@ -63,7 +63,7 @@ class TestUseIsFailingInBeforeAll:
 	extends 'res://addons/gut/test.gd'
 
 	func before_all():
-		var is_it = is_failing()
+		var _is_it = is_failing()
 
 	func test_nothing():
 		pass_test('pass it')
@@ -72,7 +72,7 @@ class TestUseIsFailingInAfterAll:
 	extends 'res://addons/gut/test.gd'
 
 	func after_all():
-		var is_it = is_failing()
+		var _is_it = is_failing()
 
 	func test_nothing():
 		pass_test('pass it')

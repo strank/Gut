@@ -1,10 +1,10 @@
-tool
+@tool
 extends Control
 
 
 var ScriptTextEditors = load('res://addons/gut/gui/script_text_editor_controls.gd')
 
-onready var _ctrls = {
+@onready var _ctrls = {
 	btn_script = $HBox/BtnRunScript,
 	btn_inner = $HBox/BtnRunInnerClass,
 	btn_method = $HBox/BtnRunMethod,
@@ -33,11 +33,11 @@ func _ready():
 func _set_editor(which):
 	_last_line = -1
 	if(_cur_editor != null and _cur_editor.get_ref()):
-		_cur_editor.get_ref().disconnect('cursor_changed', self, '_on_cursor_changed')
+		_cur_editor.get_ref().cursor_changed.disconnect(_on_cursor_changed)
 
 	if(which != null):
 		_cur_editor = weakref(which)
-		which.connect('cursor_changed', self, '_on_cursor_changed', [which])
+		which.cursor_changed.connect(_on_cursor_changed.bind(which))
 
 		_last_line = which.cursor_get_line()
 		_last_info = _editors.get_line_info()
@@ -94,20 +94,20 @@ func _on_BtnRunScript_pressed():
 	info.script = _cur_script_path.get_file()
 	info.inner_class = null
 	info.test_method = null
-	emit_signal("run_tests", info)
+	run_tests.emit(info)
 
 
 func _on_BtnRunInnerClass_pressed():
 	var info = _last_info.duplicate()
 	info.script = _cur_script_path.get_file()
 	info.test_method = null
-	emit_signal("run_tests", info)
+	run_tests.emit(info)
 
 
 func _on_BtnRunMethod_pressed():
 	var info = _last_info.duplicate()
 	info.script = _cur_script_path.get_file()
-	emit_signal("run_tests", info)
+	run_tests.emit(info)
 
 
 func get_script_button():

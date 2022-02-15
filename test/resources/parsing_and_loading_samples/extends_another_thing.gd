@@ -2,4 +2,4 @@
 extends 'res://addons/gut/test.gd'
 
 func _ready():
-    pass
+	pass

@@ -127,17 +127,17 @@ class TestTheBasics:
 
 	func test_can_double_scene():
 		var obj = gr.doubler.double_scene(DOUBLE_ME_SCENE_PATH)
-		var inst = obj.instance()
+		var inst = obj.instantiate()
 		assert_eq(inst.return_hello(), null)
 
 	func test_can_add_doubled_scene_to_tree():
-		var inst = gr.doubler.double_scene(DOUBLE_ME_SCENE_PATH).instance()
+		var inst = gr.doubler.double_scene(DOUBLE_ME_SCENE_PATH).instantiate()
 		add_child(inst)
 		assert_ne(inst.label, null)
 		remove_child(inst)
 
 	func test_metadata_for_scenes_script_points_to_scene_not_script():
-		var inst = gr.doubler.double_scene(DOUBLE_ME_SCENE_PATH).instance()
+		var inst = gr.doubler.double_scene(DOUBLE_ME_SCENE_PATH).instantiate()
 		assert_eq(inst.__gut_metadata_.path, DOUBLE_ME_SCENE_PATH)
 
 	func test_does_not_add_duplicate_methods():
@@ -251,7 +251,7 @@ class TestBuiltInOverloading:
 
 	func test_can_override_strategy_when_doubling_scene():
 		doubler.set_strategy(_utils.DOUBLE_STRATEGY.PARTIAL)
-		var inst = autofree(doubler.double_scene(DOUBLE_ME_SCENE_PATH, DOUBLE_STRATEGY.FULL).instance())
+		var inst = autofree(doubler.double_scene(DOUBLE_ME_SCENE_PATH, DOUBLE_STRATEGY.FULL).instantiate())
 		var txt = get_instance_source(inst)
 		assert_ne(txt, '', "text is not empty")
 		assert_ne(txt.find('func is_blocking_signals'), -1, 'HAS non-overloaded methods')
@@ -265,12 +265,12 @@ class TestBuiltInOverloading:
 		assert_ne(inst, null)
 
 	func test_when_everything_included_you_can_still_double_a_scene():
-		var inst = autofree(doubler.double_scene(DOUBLE_ME_SCENE_PATH).instance())
+		var inst = autofree(doubler.double_scene(DOUBLE_ME_SCENE_PATH).instantiate())
 		add_child(inst)
 		assert_ne(inst, null, "instance is not null")
 		assert_ne(inst.label, null, "Can get to a label on the instance")
 		# pause so _process gets called
-		yield(yield_for(3), YIELD)
+		await yield_for(3).timeout
 		end_test()
 
 	func test_double_includes_methods_in_super():
@@ -278,7 +278,7 @@ class TestBuiltInOverloading:
 
 	func test_can_call_a_built_in_that_has_default_parameters():
 		var inst = autofree(doubler.double(DOUBLE_EXTENDS_WINDOW_DIALOG).new())
-		inst.connect('hide', self, '_hide_call_back')
+		inst.hide.connect(_hide_call_back)
 
 	func test_all_types_supported():
 		assert_string_contains(_dbl_win_dia_text, 'popup_centered(p_size=Vector2(0, 0)):', 'Vector2')
@@ -315,7 +315,7 @@ class TestDefaultParameters:
 		doubler.set_output_dir(TEMP_FILES)
 
 	func test_parameters_are_doubled_for_connect():
-		var inst = autofree(doubler.double_scene(DOUBLE_ME_SCENE_PATH).instance())
+		var inst = autofree(doubler.double_scene(DOUBLE_ME_SCENE_PATH).instantiate())
 		var text = get_instance_source(inst)
 		var no_defaults = _sig_gen('connect', ['p_signal', 'p_target', 'p_method'])
 		var sig = str('func connect(', no_defaults, 'p_binds=[], p_flags=0):')
@@ -323,7 +323,7 @@ class TestDefaultParameters:
 		assert_string_contains(text, sig)
 
 	func test_parameters_are_doubled_for_draw_char():
-		var inst = autofree(doubler.double_scene(DOUBLE_ME_SCENE_PATH).instance())
+		var inst = autofree(doubler.double_scene(DOUBLE_ME_SCENE_PATH).instantiate())
 		var text = get_instance_source(inst)
 		var no_defaults = _sig_gen('draw_char', ['p_font', 'p_position', 'p_char', 'p_next'])
 		var sig = 'func draw_char(' + no_defaults + 'p_modulate=Color(1,1,1,1)):'
@@ -435,11 +435,11 @@ class TestPartialDoubles:
 		assert_eq(inst.get_a(), null)
 
 	func test_can_make_partial_of_scene():
-		var inst = autofree(doubler.partial_double_scene(DOUBLE_ME_SCENE_PATH).instance())
+		var inst = autofree(doubler.partial_double_scene(DOUBLE_ME_SCENE_PATH).instantiate())
 		assert_eq(inst.return_hello(), 'hello')
 
 	func test_double_scene_does_not_call_supers():
-		var inst = autofree(doubler.double_scene(DOUBLE_ME_SCENE_PATH).instance())
+		var inst = autofree(doubler.double_scene(DOUBLE_ME_SCENE_PATH).instantiate())
 		assert_eq(inst.return_hello(), null)
 		pause_before_teardown()
 
@@ -493,12 +493,12 @@ class TestAutofree:
 			a = value
 
 	func test_doubles_are_autofreed():
-		var doubled = double(DOUBLE_EXTENDS_NODE2D).new()
+		var _doubled = double(DOUBLE_EXTENDS_NODE2D).new()
 		gut.get_autofree().free_all()
 		assert_no_new_orphans()
 
 	func test_partial_doubles_are_autofreed():
-		var doubled = partial_double(DOUBLE_EXTENDS_NODE2D).new()
+		var _doubled = partial_double(DOUBLE_EXTENDS_NODE2D).new()
 		gut.get_autofree().free_all()
 		assert_no_new_orphans()
 

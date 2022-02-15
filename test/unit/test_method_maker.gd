@@ -112,7 +112,7 @@ class TestSuperCall:
 	func test_super_call_works_with_no_parameters():
 		var meta = make_meta('dummy')
 		var text = _mm.get_function_text(meta)
-		assert_string_contains(text, '.dummy()')
+		assert_string_contains(text, 'super()')
 
 	func test_super_call_contains_all_parameters():
 		var params = [
@@ -122,7 +122,7 @@ class TestSuperCall:
 		]
 		var meta = make_meta('dummy', params)
 		var text = _mm.get_function_text(meta)
-		assert_string_contains(text, '.dummy(p_value1, p_value2, p_value3)')
+		assert_string_contains(text, 'super(p_value1, p_value2, p_value3)')
 
 
 class TestOverrideParameterList:
@@ -152,7 +152,7 @@ class TestOverrideParameterList:
 		var path = 'res://nothing.gd'
 		var meta = make_meta('foo', [make_param('value1', TYPE_INT),])
 		var text = _mm.get_function_text(meta, path, 2)
-		assert_string_contains(text, '.foo(p_value1, p_arg1)')
+		assert_string_contains(text, 'super(p_value1, p_arg1)')
 
 	func test_spy_paramters_include_overrides():
 		var path = 'res://nothing.gd'

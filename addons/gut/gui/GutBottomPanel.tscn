@@ -7,7 +7,7 @@
 
 [sub_resource type="InputEventKey" id=8]
 control = true
-scancode = 49
+keycode = 49
 
 [sub_resource type="ShortCut" id=9]
 shortcut = SubResource( 8 )
@@ -383,4 +383,4 @@ margin_bottom = -125.552
 [connection signal="draw" from="layout/RSplit/CResults/ControlBar/Light" to="." method="_on_Light_draw"]
 [connection signal="pressed" from="layout/RSplit/CResults/ControlBar/CopyButton" to="." method="_on_CopyButton_pressed"]
 [connection signal="pressed" from="layout/RSplit/CResults/ControlBar/ClearButton" to="." method="_on_ClearButton_pressed"]
-[connection signal="popup_hide" from="BottomPanelShortcuts" to="." method="_on_BottomPanelShortcuts_popup_hide"]
+[connection signal="close_requested" from="BottomPanelShortcuts" to="." method="_on_BottomPanelShortcuts_popup_hide"]

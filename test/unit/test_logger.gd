@@ -40,7 +40,8 @@ func test_clear_clears_all_buffers():
 	assert_eq(l.get_deprecated().size(), 0, 'deprecated')
 
 func test_get_set_gut():
-	assert_accessors(Logger.new(), 'gut', null, double(Gut).new())
+	assert_accessors(Logger.new(), 'gut', null, "bla") #double(Gut).new())
+	# TODO: doubling Gut here, even without new(), causes a Godot crash! Seems to be looping on _run_test
 
 func test_can_get_count_using_type():
 	var l = Logger.new()

@@ -68,7 +68,7 @@ func test_param_count_returns_self():
 	assert_eq(val, gr.stub_params);
 
 func test_param_count_sets_param_count():
-	var val = gr.stub_params.param_count(3)
+	var _val = gr.stub_params.param_count(3)
 	assert_eq(gr.stub_params.parameter_count, 3)
 
 func test_param_count_default_value():

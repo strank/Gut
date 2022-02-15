@@ -1,38 +1,38 @@
 extends Panel
 
-onready var _script_list = $ScriptsList
-onready var _nav = {
+@onready var _script_list = $ScriptsList
+@onready var _nav = {
 	prev = $Navigation/Previous,
 	next = $Navigation/Next,
 	run = $Navigation/Run,
 	current_script = $Navigation/CurrentScript,
 	run_single = $Navigation/RunSingleScript
 }
-onready var _progress = {
+@onready var _progress = {
 	script = $ScriptProgress,
 	script_xy = $ScriptProgress/xy,
 	test = $TestProgress,
 	test_xy = $TestProgress/xy
 }
-onready var _summary = {
+@onready var _summary = {
 	failing = $Summary/Failing,
 	passing = $Summary/Passing,
 	fail_count = 0,
 	pass_count = 0
 }
 
-onready var _extras = $ExtraOptions
-onready var _ignore_pauses = $ExtraOptions/IgnorePause
-onready var _continue_button = $Continue/Continue
-onready var _text_box = $TextDisplay/RichTextLabel
+@onready var _extras = $ExtraOptions
+@onready var _ignore_pauses = $ExtraOptions/IgnorePause
+@onready var _continue_button = $Continue/Continue
+@onready var _text_box = $TextDisplay/RichTextLabel
 
-onready var _titlebar = {
+@onready var _titlebar = {
 	bar = $TitleBar,
 	time = $TitleBar/Time,
 	label = $TitleBar/Title
 }
 
-onready var _user_files = $UserFileViewer
+@onready var _user_files = $UserFileViewer
 
 var _mouse = {
 	down = false,
@@ -56,7 +56,7 @@ signal run_single_script
 
 func _ready():
 
-	if(Engine.editor_hint):
+	if(Engine.is_editor_hint()):
 		return
 
 	_pre_maximize_rect = get_rect()
@@ -80,7 +80,7 @@ func elapsed_time_as_str():
 
 func _process(_delta):
 	if(_is_running):
-		_time = OS.get_ticks_msec() - _start_time
+		_time = Time.get_ticks_msec() - _start_time
 		_titlebar.time.set_text(str('Time: ', elapsed_time_as_str()))
 
 func _draw(): # needs get_size()
@@ -92,7 +92,7 @@ func _draw(): # needs get_size()
 	for i in range(1, 10):
 		var x = rect_size - Vector2(i * line_space, grab_margin)
 		var y = rect_size - Vector2(grab_margin, i * line_space)
-		draw_line(x, y, grab_line_color, 1, true)
+		draw_line(x, y, grab_line_color, 1)
 
 func _on_Maximize_draw():
 	# draw the maximize square thing.
@@ -113,14 +113,14 @@ func _on_ShowExtras_draw():
 	var width = 2
 	for i in range(3):
 		var y = start_y + pad * i
-		btn.draw_line(Vector2(start_x, y), Vector2(btn.get_size().x - start_x, y), color, width, true)
+		btn.draw_line(Vector2(start_x, y), Vector2(btn.get_size().x - start_x, y), color, width)
 
 # ####################
 # GUI Events
 # ####################
 func _on_Run_pressed():
 	_run_mode()
-	emit_signal('run_script', get_selected_index())
+	run_script.emit(get_selected_index())
 
 func _on_CurrentScript_pressed():
 	_toggle_scripts()
@@ -132,28 +132,28 @@ func _on_Next_pressed():
 	_select_script(get_selected_index() + 1)
 
 func _on_LogLevelSlider_value_changed(_value):
-	emit_signal('log_level_changed', $LogLevelSlider.value)
+	log_level_changed.emit($LogLevelSlider.value)
 
 func _on_Continue_pressed():
 	_continue_button.disabled = true
-	emit_signal('end_pause')
+	end_pause.emit()
 
 func _on_IgnorePause_pressed():
 	var checked = _ignore_pauses.is_pressed()
-	emit_signal('ignore_pause', checked)
+	ignore_pause.emit(checked)
 	if(checked):
-		emit_signal('end_pause')
+		end_pause.emit()
 		_continue_button.disabled = true
 
 func _on_RunSingleScript_pressed():
 	_run_mode()
-	emit_signal('run_single_script', get_selected_index())
+	run_single_script.emit(get_selected_index())
 
 func _on_ScriptsList_item_selected(index):
 	var tmr = $ScriptsList/DoubleClickTimer
 	if(!tmr.is_stopped()):
 		_run_mode()
-		emit_signal('run_single_script', get_selected_index())
+		run_single_script.emit(get_selected_index())
 		tmr.stop()
 	else:
 		tmr.start()
@@ -193,7 +193,7 @@ func _on_ResizeHandle_mouse_entered():
 func _on_ResizeHandle_mouse_exited():
 	_mouse.in_handle = false
 
-func _on_RichTextLabel_gui_input(ev):
+func _on_RichTextLabel_gui_input(_ev):
 	pass
 	# leaving this b/c it is wired up and might have to send
 	# more signals through
@@ -215,7 +215,7 @@ func _on_Maximize_pressed():
 # ####################
 func _run_mode(is_running=true):
 	if(is_running):
-		_start_time = OS.get_ticks_msec()
+		_start_time = Time.get_ticks_msec()
 		_time = 0.0
 		clear_summary()
 	_is_running = is_running
@@ -261,9 +261,6 @@ func _update_controls():
 	_nav.run_single.disabled = is_empty
 
 func _update_summary():
-	if(!_summary):
-		return
-
 	var total = _summary.fail_count + _summary.pass_count
 	$Summary.visible = !total == 0
 	$Summary/AssertCount.text = str('Failures ', _summary.fail_count, '/', total)
@@ -296,7 +293,7 @@ func set_log_level(value):
 	$LogLevelSlider.value = new_value
 
 func set_ignore_pause(should):
-	_ignore_pauses.pressed = should
+	_ignore_pauses.button_pressed = should
 
 func get_ignore_pause():
 	return _ignore_pauses.pressed
@@ -344,14 +341,10 @@ func set_title(title=null):
 		$TitleBar/Title.set_text(title)
 
 func add_passing(amount=1):
-	if(!_summary):
-		return
 	_summary.pass_count += amount
 	_update_summary()
 
 func add_failing(amount=1):
-	if(!_summary):
-		return
 	_summary.fail_count += amount
 	_update_summary()
 
@@ -363,11 +356,11 @@ func clear_summary():
 func maximize():
 	if(is_inside_tree()):
 		var vp_size_offset = get_viewport().size
-		rect_size = vp_size_offset / get_scale()
+		rect_size = vp_size_offset as Vector2 / get_scale()
 		set_position(Vector2(0, 0))
 
 func clear_text():
-	_text_box.bbcode_text = ''
+	_text_box.text = ''
 
 func scroll_to_bottom():
 	pass
@@ -381,7 +374,7 @@ func _set_font_size_for_rtl(rtl, new_size):
 		rtl.get('custom_fonts/normal_font').size = new_size
 
 
-func _set_fonts_for_rtl(rtl, base_font_name):
+func _set_fonts_for_rtl(_rtl, _base_font_name):
 	pass
 
 
@@ -395,11 +388,10 @@ func _set_font(rtl, font_name, custom_name):
 	if(font_name == null):
 		rtl.set('custom_fonts/' + custom_name, null)
 	else:
-		var dyn_font = DynamicFont.new()
-		var font_data = DynamicFontData.new()
-		font_data.font_path = 'res://addons/gut/fonts/' + font_name + '.ttf'
-		font_data.antialiased = true
-		dyn_font.font_data = font_data
+		var dyn_font = Font.new()
+		var font_data = load('res://addons/gut/fonts/' + font_name + '.ttf')
+		font_data.set_antialiased(true)
+		dyn_font.add_data(font_data)
 		rtl.set('custom_fonts/' + custom_name, dyn_font)
 
 func _set_all_fonts_in_ftl(ftl, base_name):

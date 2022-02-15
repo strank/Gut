@@ -1,13 +1,13 @@
 extends "res://addons/gut/test.gd"
 
 func test_one():
-    pass
+	pass
 
 func test_two():
-    pass
+	pass
 
 func not_prefixed():
-    pass
+	pass
 
 func diff_prefix_something():
-    pass
+	pass

@@ -13,7 +13,7 @@ func after_all():
 
 func _on_Gut_gut_ready():
 	yield_timer.wait_time = .5
-	yield_timer.connect('timeout', self, 'on_yield_timer_timeout')
+	yield_timer.timeout.connect(on_yield_timer_timeout)
 	yield_timer.one_shot = false
 	add_child(yield_timer)
 

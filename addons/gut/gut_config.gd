@@ -76,23 +76,24 @@ func _load_options_from_config_file(file_path, into):
 		push_error(str("Could not load data ", file_path, ' ', result))
 		return result
 
-	var json = f.get_as_text()
+	var json_text = f.get_as_text()
 	f.close()
 
-	var results = JSON.parse(json)
+	var json = JSON.new()
+	var error = json.parse(json_text)
 	# SHORTCIRCUIT
-	if(results.error != OK):
+	if(error != OK):
 		print("\n\n",'!! ERROR parsing file:  ', file_path)
-		print('    at line ', results.error_line, ':')
-		print('    ', results.error_string)
+		print('    at line ', json.get_error_line(), ':')
+		print('    ', json.get_error_message())
 		return -1
-
 	# Get all the options out of the config file using the option name.  The
 	# options hash is now the default source of truth for the name of an option.
+	var data = json.get_data()
 	for key in into:
-		if(results.result.has(key)):
-			if(results.result[key] != null):
-				into[key] = results.result[key]
+		if(data.has(key)):
+			if(data[key] != null):
+				into[key] = data[key]
 
 	return 1
 

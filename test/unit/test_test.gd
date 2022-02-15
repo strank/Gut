@@ -164,14 +164,12 @@ class TestAssertEq:
 		var d_pointer = d
 		gr.test.assert_eq(d, d_pointer)
 		assert_pass(gr.test)
-		assert_string_contains(gr.test._fail_pass_text[0], _compare.DICTIONARY_DISCLAIMER)
 
 	func test_dictionary_not_compared_by_value():
 		var d  = {'a':1}
 		var d2 = {'a':1}
 		gr.test.assert_eq(d, d2)
 		assert_fail(gr.test)
-		assert_string_contains(gr.test._fail_pass_text[0], _compare.DICTIONARY_DISCLAIMER)
 
 
 class TestAssertNe:
@@ -213,14 +211,12 @@ class TestAssertNe:
 		var d_pointer = d
 		gr.test.assert_ne(d, d_pointer)
 		assert_fail(gr.test)
-		assert_string_contains(gr.test._fail_pass_text[0], _compare.DICTIONARY_DISCLAIMER)
 
 	func test_dictionary_not_compared_by_value():
 		var d  = {'a':1}
 		var d2 = {'a':1}
 		gr.test.assert_ne(d, d2)
 		assert_pass(gr.test)
-		assert_string_contains(gr.test._fail_pass_text[0], _compare.DICTIONARY_DISCLAIMER)
 
 class TestAssertAlmostEq:
 	extends BaseTestClass
@@ -643,7 +639,7 @@ class TestGetSetAsserts:
 	class HasGetAndSetThatDontWork:
 		func get_thing():
 			pass
-		func set_thing(new_thing):
+		func set_thing(_new_thing):
 			pass
 
 	class HasGetSetThatWorks:
@@ -703,16 +699,16 @@ class TestAssertExports:
 		var some_property = 1
 
 	class HasCorrectEditorPropertyAndExplicitType:
-		export(int) var int_property
+		@export var int_property: int
 
 	class HasCorrectEditorPropertyAndImplicitType:
-		export var vec2_property = Vector2(0.0, 0.0)
+		@export var vec2_property := Vector2(0.0, 0.0)
 
 	class HasCorrectEditorPropertyNotType:
-		export(bool) var bool_property
+		@export var bool_property: bool
 
 	class HasObjectDerivedPropertyType:
-		export(PackedScene) var scene_property
+		@export var scene_property: PackedScene
 
 	func test_fail_if_property_not_found():
 		var obj = NoProperty.new()
@@ -736,7 +732,7 @@ class TestAssertExports:
 
 	func test_fail_if_editor_property_present_with_incorrect_type():
 		var obj = HasCorrectEditorPropertyNotType.new()
-		gr.test.assert_exports(obj, "bool_property", TYPE_REAL)
+		gr.test.assert_exports(obj, "bool_property", TYPE_FLOAT)
 		assert_fail(gr.test)
 
 	func test__object_derived_type__exported_as_object_type():
@@ -859,11 +855,11 @@ class TestSignalAsserts:
 			add_user_signal(SIGNALS.SOME_SIGNAL)
 
 	func before_each():
-		.before_each()
+		super()
 		gr.signal_object = SignalObject.new()
 
 	func after_each():
-		.after_each()
+		super()
 		gr.signal_object = null
 
 	func test_when_object_not_being_watched__assert_signal_emitted__fails():
@@ -1097,8 +1093,8 @@ class TestExtendAsserts:
 		assert_fail(gr.test, 1, 'Fails in 3.1, bug has been created.')
 
 	func test_assrt_is_does_not_free_references():
-		var ref = Reference.new()
-		gr.test.assert_is(ref, Reference)
+		var ref = RefCounted.new()
+		gr.test.assert_is(ref, RefCounted)
 		assert_pass(gr.test)
 
 	func test_works_with_resources():
@@ -1436,11 +1432,11 @@ class TestReplaceNode:
 	var _arena = null
 
 	func before_each():
-		.before_each()
-		_arena = Arena.instance()
+		super()
+		_arena = Arena.instantiate()
 
 	func after_each():
-		.after_each()
+		super()
 		_arena.queue_free()
 
 	func test_can_replace_node():
@@ -1468,7 +1464,7 @@ class TestReplaceNode:
 		var old = _arena.get_sword()
 		gr.test.replace_node(_arena, 'Player1/Sword', replacement)
 		# object is freed using queue_free, so we have to wait for it to go away
-		yield(yield_for(0.5), YIELD)
+		await yield_for(0.5).timeout
 		assert_true(_utils.is_freed(old))
 
 	func test_replaced_node_retains_groups():
@@ -1544,14 +1540,14 @@ class TestConnectionAsserts:
 	func test_when_target_connected_to_source_connected_passes_with_method_name():
 		var s = Signaler.new()
 		var c = ConnectTo.new()
-		s.connect(SIGNAL_NAME, c, METHOD_NAME)
+		s.test_signal.connect(c.test_signal_connector)
 		gr.test.assert_connected(s, c, SIGNAL_NAME, METHOD_NAME)
 		assert_pass(gr.test)
 
 	func test_when_target_connected_to_source_connected_passes_without_method_name():
 		var s = Signaler.new()
 		var c = ConnectTo.new()
-		s.connect(SIGNAL_NAME, c, METHOD_NAME)
+		s.test_signal.connect(c.test_signal_connector)
 		gr.test.assert_connected(s, c, SIGNAL_NAME)
 		assert_pass(gr.test)
 
@@ -1570,14 +1566,14 @@ class TestConnectionAsserts:
 	func test_when_target_connected_to_source_not_connected_fails_with_method_name():
 		var s = Signaler.new()
 		var c = ConnectTo.new()
-		s.connect(SIGNAL_NAME, c, METHOD_NAME)
+		s.test_signal.connect(c.test_signal_connector)
 		gr.test.assert_not_connected(s, c, SIGNAL_NAME, METHOD_NAME)
 		assert_fail(gr.test)
 
 	func test_when_target_connected_to_source_not_connected_fails_without_method_name():
 		var s = Signaler.new()
 		var c = ConnectTo.new()
-		s.connect(SIGNAL_NAME, c, METHOD_NAME)
+		s.test_signal.connect(c.test_signal_connector)
 		gr.test.assert_not_connected(s, c, SIGNAL_NAME)
 		assert_fail(gr.test)
 
@@ -1645,7 +1641,7 @@ class TestMemoryMgmt:
 	func test_passes_with_queue_free():
 		var n2d = Node2D.new()
 		n2d.queue_free()
-		yield(yield_for(.5, 'must yield for queue_free to take hold'), YIELD)
+		await yield_for(.5, 'must yield for queue_free to take hold').timeout
 		assert_no_new_orphans()
 		assert_true(gut._current_test.passed, 'this should be passing')
 
@@ -1663,7 +1659,7 @@ class TestMemoryMgmt:
 		assert_eq(n.get_parent(), self, 'added as child')
 		gut.get_autofree().free_all()
 		assert_not_freed(n, 'node') # should not be freed until yield
-		yield(yield_for(.5), YIELD)
+		await yield_for(.5).timeout
 		assert_freed(n, 'node')
 		assert_no_new_orphans()
 
@@ -1680,7 +1676,7 @@ class TestTestStateChecking:
 	var _gut = null
 
 	func before_each():
-		.before_each()
+		super()
 		_gut = _utils.Gut.new()
 		add_child_autoqfree(_gut)
 		_gut.add_script('res://test/resources/state_check_tests.gd')
@@ -1764,7 +1760,7 @@ class TestCompareDeepShallow:
 	func test_compare_shallow_uses_compare():
 		var d_compare = double(_utils.Comparator).new()
 		gr.test._compare = d_compare
-		var result = gr.test.compare_shallow([], [])
+		var _result = gr.test.compare_shallow([], [])
 		assert_called(d_compare, 'shallow')
 
 	func test_compare_shallow_sets_max_differences():
@@ -1774,7 +1770,7 @@ class TestCompareDeepShallow:
 	func test_compare_deep_uses_compare():
 		var d_compare = double(_utils.Comparator).new()
 		gr.test._compare = d_compare
-		var result = gr.test.compare_deep([], [])
+		var _result = gr.test.compare_deep([], [])
 		assert_called(d_compare, 'deep')
 
 	func test_compare_deep_sets_max_differences():
@@ -1929,7 +1925,7 @@ class TestAssertProperty:
 
 
 	func test_passes_if_instance_is_obj_from_packed_scene():
-		var scene_mock = TestScene.instance()
+		var scene_mock = TestScene.instantiate()
 		add_child_autoqfree(scene_mock)
 		var dflt_node_with_setter = scene_mock.get_node_with_setter_getter()
 		var new_node_child_mock = TestNode.new()

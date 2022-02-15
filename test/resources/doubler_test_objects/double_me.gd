@@ -1,3 +1,5 @@
+extends Node2D
+
 var _value = 0
 
 
@@ -15,14 +17,14 @@ func get_value():
 func set_value(val):
 	_value = val
 
-func has_one_param(one):
+func has_one_param(_one):
 	pass
 
-func has_two_params_one_default(one, two=null):
+func has_two_params_one_default(_one, _two=null):
 	pass
 
 func get_position():
-	return .get_position()
+	return super()
 
-func has_string_and_array_defaults(string_param = "asdf", array_param = [1]):
+func has_string_and_array_defaults(_string_param = "asdf", _array_param = [1]):
 	pass

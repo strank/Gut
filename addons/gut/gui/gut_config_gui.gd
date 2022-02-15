@@ -150,8 +150,8 @@ func _add_title(text):
 	lbl.text = text
 	lbl.align = Label.ALIGN_CENTER
 	_base_container.add_child(row)
-
-	row.connect('draw', self, '_on_title_cell_draw', [row])
+	
+	row.draw.connect(_on_title_cell_draw.bind(row))
 
 
 func _add_number(key, value, disp_text, v_min, v_max, hint=''):

@@ -4,7 +4,6 @@ var _max_length = 100
 var _should_compare_int_to_float = true
 
 const MISSING = '|__missing__gut__compare__value__|'
-const DICTIONARY_DISCLAIMER = 'Dictionaries are compared-by-ref.  See assert_eq in wiki.'
 
 func _cannot_comapre_text(v1, v2):
 	return str('Cannot compare ', _strutils.types[typeof(v1)], ' with ',
@@ -46,17 +45,10 @@ func simple(v1, v2, missing_string=''):
 
 	elif(_utils.are_datatypes_same(v1, v2)):
 		result.are_equal = v1 == v2
-		if(typeof(v1) == TYPE_DICTIONARY):
-			if(result.are_equal):
-				extra = '.  Same dictionary ref.  '
-			else:
-				extra = '.  Different dictionary refs.  '
-			extra += DICTIONARY_DISCLAIMER
-
 		if(typeof(v1) == TYPE_ARRAY):
 			var array_result = _utils.DiffTool.new(v1, v2, _utils.DIFF.SHALLOW)
 			result.summary = array_result.get_short_summary()
-			if(!array_result.are_equal()):
+			if(!array_result.are_equal):
 				extra = ".\n" + array_result.get_short_summary()
 
 	else:

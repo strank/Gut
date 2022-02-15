@@ -51,7 +51,7 @@ func test_is_instance_false_for_instanced_things():
 
 func test_get_native_class_name_does_not_generate_orphans():
 	var utils = Utils.new()
-	var n = utils.get_native_class_name(Node2D)
+	var _n = utils.get_native_class_name(Node2D)
 	utils.free()
 	assert_no_new_orphans()
 
@@ -103,5 +103,5 @@ func test_latest_version_if_version_is_old_warning_is_on():
 	utils._http_request_latest_version()
 	var p = utils.get_node("http_request")
 	assert_not_null(p, "should have a child http request")
-	yield(yield_to(p,"request_completed",2),YIELD)
+	await yield_to(p,"request_completed",2).timeout
 	assert_true(utils.should_display_latest_version,"this should fail only if you dont have internet connection")

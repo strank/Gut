@@ -14,7 +14,7 @@ var the_signal_object = SignalObject.new()
 
 func test_watch_and_emit_a_signal():
 	watch_signals(the_signal_object)
-	the_signal_object.emit_signal('the_signal')
+	the_signal_object.the_signal.emit()
 	assert_signal_emitted(the_signal_object, 'the_signal')
 
 func test_make_sure_not_watching_anymore():

@@ -203,7 +203,7 @@ func test_write_file_creates_file():
 	run_scripts(_test_gut, 'test_simple_2.gd')
 	var fname = "user://test_result_exporter.json"
 	var re = ResultExporter.new()
-	var result = re.write_json_file(_test_gut, fname)
+	var _result = re.write_json_file(_test_gut, fname)
 	assert_file_not_empty(fname)
 	gut.file_delete(fname)
 

@@ -28,7 +28,7 @@ func make_node():
     player1.add_child(sword)
     sword.set_name('Sword')
 
-    sword.connect('tree_entered', self, '_on_entered_tree')
+    sword.tree_entered.connect(_on_entered_tree)
 
     return field
 

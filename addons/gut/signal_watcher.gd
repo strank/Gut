@@ -63,7 +63,7 @@ func _add_watched_signal(obj, name):
 		_watched_signals[obj] = {name:[]}
 	else:
 		_watched_signals[obj][name] = []
-	obj.connect(name, self, '_on_watched_signal', [obj, name])
+	obj[name].connect(self._on_watched_signal.bind(obj, name))
 
 # This handles all the signals that are watched.  It supports up to 9 parameters
 # which could be emitted by the signal and the two parameters used when it is
@@ -83,7 +83,7 @@ func _on_watched_signal(arg1=ARG_NOT_SET, arg2=ARG_NOT_SET, arg3=ARG_NOT_SET, \
 	# strip off any unused vars.
 	var idx = args.size() -1
 	while(str(args[idx]) == ARG_NOT_SET):
-		args.remove(idx)
+		args.remove_at(idx)
 		idx -= 1
 
 	# retrieve object and signal name from the array and remove them.  These
@@ -151,7 +151,7 @@ func clear():
 	for obj in _watched_signals:
 		if(_utils.is_not_freed(obj)):
 			for signal_name in _watched_signals[obj]:
-				obj.disconnect(signal_name, self, '_on_watched_signal')
+				obj.disconnect(signal_name, _on_watched_signal)
 	_watched_signals.clear()
 
 # Returns a list of all the signal names that were emitted by the object.

@@ -81,12 +81,12 @@ func _init():
 	_supported_defaults[TYPE_NIL] = ''
 	_supported_defaults[TYPE_BOOL] = ''
 	_supported_defaults[TYPE_INT] = ''
-	_supported_defaults[TYPE_REAL] = ''
+	_supported_defaults[TYPE_FLOAT] = ''
 	_supported_defaults[TYPE_OBJECT] = ''
 	_supported_defaults[TYPE_ARRAY] = ''
 	_supported_defaults[TYPE_STRING] = ''
 	_supported_defaults[TYPE_DICTIONARY] = ''
-	_supported_defaults[TYPE_VECTOR2_ARRAY] = ''
+	_supported_defaults[TYPE_PACKED_VECTOR2_ARRAY] = ''
 	_supported_defaults[TYPE_RID] = ''
 
 	# These require a prefix for whatever default is provided
@@ -201,15 +201,14 @@ func _get_arg_text(arg_array):
 	return text
 
 
-# creates a call to the function in meta in the super's class.
-func _get_super_call_text(method_name, args, super_name=""):
+func _get_super_call_text(_method_name, args):
 	var params = ''
 	for i in range(args.size()):
 		params += args[i].p_name
 		if(i != args.size() -1):
 			params += ', '
 
-	return str(super_name, '.', method_name, '(', params, ')')
+	return str('super(', params, ')')
 
 
 func _get_spy_call_parameters_text(args):
@@ -234,7 +233,7 @@ func _get_spy_call_parameters_text(args):
 # types whose defaults are supported will have their values.  If a datatype
 # is not supported and the parameter has a default, a warning message will be
 # printed and the declaration will return null.
-func get_function_text(meta, path=null, override_size=null, super_name=""):
+func get_function_text(meta, _path=null, override_size=null):
 	var method_params = ''
 	var text = null
 	var result = _make_arg_array(meta, override_size)

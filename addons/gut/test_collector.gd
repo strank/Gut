@@ -25,9 +25,9 @@ class Test:
 # This class also facilitates all the exporting and importing of tests.
 # ------------------------------------------------------------------------------
 class TestScript:
-	var inner_class_name = null
+	var inner_class_name = ""
 	var tests = []
-	var path = null
+	var path = ""
 	var _utils = null
 	var _lgr = null
 
@@ -37,7 +37,7 @@ class TestScript:
 
 	func to_s():
 		var to_return = path
-		if(inner_class_name != null):
+		if inner_class_name:
 			to_return += str('.', inner_class_name)
 		to_return += "\n"
 		for i in range(tests.size()):
@@ -50,7 +50,7 @@ class TestScript:
 	func load_script():
 		#print('loading:  ', get_full_name())
 		var to_return = load(path)
-		if(inner_class_name != null):
+		if inner_class_name:
 			# If we wanted to do inner classes in inner classses
 			# then this would have to become some kind of loop or recursive
 			# call to go all the way down the chain or this class would
@@ -61,13 +61,13 @@ class TestScript:
 
 	func get_filename_and_inner():
 		var to_return = get_filename()
-		if(inner_class_name != null):
+		if inner_class_name:
 			to_return += '.' + inner_class_name
 		return to_return
 
 	func get_full_name():
 		var to_return = path
-		if(inner_class_name != null):
+		if inner_class_name:
 			to_return += '.' + inner_class_name
 		return to_return
 
@@ -75,7 +75,7 @@ class TestScript:
 		return path.get_file()
 
 	func has_inner_class():
-		return inner_class_name != null
+		return inner_class_name != ""
 
 	# Note:  although this no longer needs to export the inner_class names since
 	#        they are pulled from metadata now, it is easier to leave that in

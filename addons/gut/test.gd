@@ -177,29 +177,29 @@ func _pass(text):
 		_lgr.passed(text)
 		gut._pass(text)
 
+
+const NUM_TYPES = [TYPE_INT, TYPE_FLOAT]
+
 # ------------------------------------------------------------------------------
 # Checks if the datatypes passed in match.  If they do not then this will cause
 # a fail to occur.  If they match then TRUE is returned, FALSE if not.  This is
 # used in all the assertions that compare values.
 # ------------------------------------------------------------------------------
 func _do_datatypes_match__fail_if_not(got, expected, text):
-	var did_pass = true
-
 	if(!_disable_strict_datatype_checks):
 		var got_type = typeof(got)
 		var expect_type = typeof(expected)
 		if(got_type != expect_type and got != null and expected != null):
 			# If we have a mismatch between float and int (types 2 and 3) then
 			# print out a warning but do not fail.
-			if([2, 3].has(got_type) and [2, 3].has(expect_type)):
+			if(got_type in NUM_TYPES and expect_type in NUM_TYPES):
 				_lgr.warn(str('Warn:  Float/Int comparison.  Got ', _strutils.types[got_type],
 					' but expected ', _strutils.types[expect_type]))
 			else:
 				_fail('Cannot compare ' + _strutils.types[got_type] + '[' + _str(got) + '] to ' + \
 					_strutils.types[expect_type] + '[' + _str(expected) + '].  ' + text)
-				did_pass = false
-
-	return did_pass
+				return false
+	return true
 
 # ------------------------------------------------------------------------------
 # Create a string that lists all the methods that were called on an spied
@@ -231,7 +231,7 @@ func _fail_if_not_watching(object):
 	var did_fail = false
 	if(!_signal_watcher.is_watching_object(object)):
 		_fail(str('Cannot make signal assertions because the object ', object, \
-				  ' is not being watched.  Call watch_signals(some_object) to be able to make assertions about signals.'))
+				' is not being watched.  Call watch_signals(some_object) to be able to make assertions about signals.'))
 		did_fail = true
 	return did_fail
 
@@ -257,7 +257,7 @@ func _fail_if_parameters_not_array(parameters):
 func _create_obj_from_type(type):
 	var obj = null
 	if type.is_class("PackedScene"):
-		obj = type.instance()
+		obj = type.instantiate()
 		add_child(obj)
 	else:
 		obj = type.new()
@@ -718,7 +718,7 @@ func assert_signal_emitted_with_parameters(object, signal_name, parameters, inde
 		if(_signal_watcher.did_emit(object, signal_name)):
 			var parms_got = _signal_watcher.get_signal_parameters(object, signal_name, index)
 			var diff_result = _compare.deep(parameters, parms_got)
-			if(diff_result.are_equal()):
+			if(diff_result.are_equal):
 				_pass(str(disp, parms_got))
 			else:
 				_fail(str('Expected object ', _str(object), ' to emit signal [', signal_name, '] with parameters ', diff_result.summarize()))
@@ -1315,24 +1315,29 @@ func get_summary_text():
 func _smart_double(double_info):
 	var override_strat = _utils.nvl(double_info.strategy, gut.get_doubler().get_strategy())
 	var to_return = null
+	prints("_smart_double", double_info.subpath, double_info.make_partial, double_info.path, override_strat)
 
 	if(double_info.is_scene()):
+		prints("_smart_double scene")
 		if(double_info.make_partial):
 			to_return =  gut.get_doubler().partial_double_scene(double_info.path, override_strat)
 		else:
 			to_return =  gut.get_doubler().double_scene(double_info.path, override_strat)
 
 	elif(double_info.is_native()):
+		prints("_smart_double native")
 		if(double_info.make_partial):
 			to_return = gut.get_doubler().partial_double_gdnative(double_info.path)
 		else:
 			to_return = gut.get_doubler().double_gdnative(double_info.path)
 
 	elif(double_info.is_script()):
+		prints("_smart_double script")
 		if(double_info.subpath == null):
 			if(double_info.make_partial):
 				to_return = gut.get_doubler().partial_double(double_info.path, override_strat)
 			else:
+				print("this branch!")
 				to_return = gut.get_doubler().double(double_info.path, override_strat)
 		else:
 			if(double_info.make_partial):
@@ -1350,7 +1355,6 @@ func double(thing, p2=null, p3=null):
 		return null
 
 	double_info.make_partial = false
-
 	return _smart_double(double_info)
 
 # ------------------------------------------------------------------------------
@@ -1415,7 +1419,7 @@ func ignore_method_when_doubling(thing, method_name):
 	var path = double_info.path
 
 	if(double_info.is_scene()):
-		var inst = thing.instance()
+		var inst = thing.instantiate()
 		if(inst.get_script()):
 			path = inst.get_script().get_path()
 
@@ -1506,7 +1510,7 @@ func use_parameters(params):
 		ph = _utils.ParameterHandler.new(params)
 		gut.set_parameter_handler(ph)
 
-	var output = str('(call #', ph.get_call_count() + 1, ') with paramters:  ', ph.get_current_parameters())
+	var output = str('(call #', ph.get_call_count() + 1, ') with parameters:  ', ph.get_current_parameters())
 	_lgr.log(output)
 	_lgr.inc_indent()
 	return ph.next_parameters()
@@ -1536,7 +1540,7 @@ func add_child_autofree(node, legible_unique_name = false):
 	gut.get_autofree().add_free(node)
 	# Explicitly calling super here b/c add_child MIGHT change and I don't want
 	# a bug sneaking its way in here.
-	.add_child(node, legible_unique_name)
+	super.add_child(node, legible_unique_name)
 	return node
 
 # ------------------------------------------------------------------------------
@@ -1546,7 +1550,7 @@ func add_child_autoqfree(node, legible_unique_name=false):
 	gut.get_autofree().add_queue_free(node)
 	# Explicitly calling super here b/c add_child MIGHT change and I don't want
 	# a bug sneaking its way in here.
-	.add_child(node, legible_unique_name)
+	super.add_child(node, legible_unique_name)
 	return node
 
 # ------------------------------------------------------------------------------

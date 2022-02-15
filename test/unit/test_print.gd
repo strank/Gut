@@ -69,7 +69,7 @@ func test_show_info():
 
 func test_yield():
 	gut.p('starting yield')
-	yield(yield_for(2), YIELD)
+	await yield_for(2).timeout
 	gut.p('end yield')
 
 class TestGuiOutput:
@@ -91,7 +91,6 @@ class TestBasicLoggerOutput:
 		_test_logger = _utils.Logger.new()
 		_test_logger.set_gut(gut)
 		_test_logger.set_indent_string('|...')
-		_test_logger._skip_test_name_for_testing = true
 
 	func test_indent_levels():
 		_test_logger.log('0 indent')

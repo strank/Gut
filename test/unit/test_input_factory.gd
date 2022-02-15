@@ -7,26 +7,26 @@ class TestCreateKeyEvents:
 	func test_key_up_creates_event_for_key():
 		var event = InputFactory.key_up(KEY_A)
 		assert_is(event, InputEventKey, 'is InputEventKey')
-		assert_eq(event.scancode, KEY_A)
+		assert_eq(event.keycode, KEY_A)
 		assert_false(event.pressed, "pressed")
 
-	func test_key_up_converts_lowercase_string_to_scancode():
+	func test_key_up_converts_lowercase_string_to_keycode():
 		var event = InputFactory.key_up('a')
-		assert_eq(event.scancode, KEY_A)
+		assert_eq(event.keycode, KEY_A)
 
-	func test_key_up_converts_uppercase_string_to_scancode():
+	func test_key_up_converts_uppercase_string_to_keycode():
 		var event = InputFactory.key_up('A')
-		assert_eq(event.scancode, KEY_A)
+		assert_eq(event.keycode, KEY_A)
 
 	func test_key_down_creates_event_for_key():
 		var event = InputFactory.key_down(KEY_B)
 		assert_is(event, InputEventKey, 'is InputEventKey')
-		assert_eq(event.scancode, KEY_B)
+		assert_eq(event.keycode, KEY_B)
 		assert_true(event.pressed, "pressed")
 
-	func test_key_down_converts_lowercase_string_to_scancode():
+	func test_key_down_converts_lowercase_string_to_keycode():
 		var event = InputFactory.key_down('z')
-		assert_eq(event.scancode, KEY_Z)
+		assert_eq(event.keycode, KEY_Z)
 
 
 class TestCreateActionEvents:
@@ -77,25 +77,25 @@ class TestMouseButtons:
 		assert_eq(event.global_position, Vector2(11, 11), "global position")
 
 	func test_lmb_down():
-		assert_mouse_event_props("mouse_left_button_down", true, BUTTON_LEFT)
+		assert_mouse_event_props("mouse_left_button_down", true, MOUSE_BUTTON_LEFT)
 		assert_mouse_event_positions("mouse_left_button_down")
 
 	func test_lmb_up():
-		assert_mouse_event_props("mouse_left_button_up", false, BUTTON_LEFT)
+		assert_mouse_event_props("mouse_left_button_up", false, MOUSE_BUTTON_LEFT)
 		assert_mouse_event_positions("mouse_left_button_up")
 
 	func test_double_clickk():
-		assert_mouse_event_props("mouse_double_click", false, BUTTON_LEFT)
+		assert_mouse_event_props("mouse_double_click", false, MOUSE_BUTTON_LEFT)
 		assert_mouse_event_positions("mouse_double_click")
 		var event = InputFactory.mouse_double_click(Vector2(1, 1))
-		assert_true(event.doubleclick, "double click")
+		assert_true(event.double_click, "double click")
 
 	func test_rmb_down():
-		assert_mouse_event_props("mouse_right_button_down", true, BUTTON_RIGHT)
+		assert_mouse_event_props("mouse_right_button_down", true, MOUSE_BUTTON_RIGHT)
 		assert_mouse_event_positions("mouse_right_button_down")
 
 	func test_rmb_up():
-		assert_mouse_event_props("mouse_right_button_up", false, BUTTON_RIGHT)
+		assert_mouse_event_props("mouse_right_button_up", false, MOUSE_BUTTON_RIGHT)
 		assert_mouse_event_positions("mouse_right_button_up")
 
 class TestMouseMotion:
@@ -132,16 +132,16 @@ class TestMouseMotion:
 	func test_mouse_relative_sets_speed_defaults_to_zero_zero():
 		var last_event = InputFactory.mouse_motion(Vector2(10, 10), Vector2(20, 20))
 		var relative = InputFactory.mouse_relative_motion(Vector2(2, 2), last_event)
-		assert_eq(relative.speed, Vector2(0, 0))
+		assert_eq(relative.velocity, Vector2(0, 0))
 
 	func test_mouse_relatvie_sets_speed_when_specified():
 		var last_event = InputFactory.mouse_motion(Vector2(10, 10), Vector2(20, 20))
 		var relative = InputFactory.mouse_relative_motion(Vector2(2, 2), last_event, Vector2(1, 1))
-		assert_eq(relative.speed, Vector2(1, 1))
+		assert_eq(relative.velocity, Vector2(1, 1))
 
 	func test_mouse_relative_sets_speed_when_last_motion_not_sent():
 		var event = InputFactory.mouse_relative_motion(Vector2(1, 1), null, Vector2(10, 10))
-		assert_eq(event.speed, Vector2(10, 10))
+		assert_eq(event.velocity, Vector2(10, 10))
 
 
 

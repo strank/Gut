@@ -84,7 +84,6 @@ var _gut = null
 var _utils = null
 var _indent_level = 0
 var _indent_string = '    '
-var _skip_test_name_for_testing = false
 var _less_test_names = false
 var _yield_calls = 0
 var _last_yield_text = ''

@@ -55,9 +55,9 @@ var GutRunner = load('res://addons/gut/gui/GutRunner.tscn')
 # will punch through null values of higher precedented hashes.
 # ------------------------------------------------------------------------------
 class OptionResolver:
-	var base_opts = null
-	var cmd_opts = null
-	var config_opts = null
+	var base_opts: Dictionary
+	var cmd_opts: Dictionary
+	var config_opts: Dictionary
 
 
 	func get_value(key):
@@ -88,9 +88,9 @@ class OptionResolver:
 
 	func to_s():
 		return str("base:\n", _string_it(base_opts), "\n", \
-				   "config:\n", _string_it(config_opts), "\n", \
-				   "cmd:\n", _string_it(cmd_opts), "\n", \
-				   "resolved:\n", _string_it(get_resolved_values()))
+				"config:\n", _string_it(config_opts), "\n", \
+				"cmd:\n", _string_it(cmd_opts), "\n", \
+				"resolved:\n", _string_it(get_resolved_values()))
 
 	func get_resolved_values():
 		var to_return = {}
@@ -266,8 +266,8 @@ func _run_gut():
 			runner.set_gut_config(_gut_config)
 
 			_tester = runner.get_gut()
-			_tester.connect('tests_finished', self, '_on_tests_finished',
-				[_final_opts.should_exit, _final_opts.should_exit_on_success])
+			_tester.tests_finished.connect(_on_tests_finished.bind(
+				_final_opts.should_exit, _final_opts.should_exit_on_success))
 
 			get_root().add_child(runner)
 			runner.run_tests()
@@ -280,16 +280,17 @@ func _on_tests_finished(should_exit, should_exit_on_success):
 			var lgr = _tester.get_logger()
 			lgr.error('No directories configured.  Add directories with options or a .gutconfig.json file.  Use the -gh option for more information.')
 
+	var exit_code = 0
 	if(_tester.get_fail_count()):
-		OS.exit_code = 1
+		exit_code = 1
 
 	# Overwrite the exit code with the post_script
 	var post_inst = _tester.get_post_run_script_instance()
 	if(post_inst != null and post_inst.get_exit_code() != null):
-		OS.exit_code = post_inst.get_exit_code()
+		exit_code = post_inst.get_exit_code()
 
 	if(should_exit or (should_exit_on_success and _tester.get_fail_count() == 0)):
-		quit()
+		quit(exit_code)
 	else:
 		print("Tests finished, exit manually")
 
@@ -300,7 +301,6 @@ func _init():
 	if(!_utils.is_version_ok()):
 		print("\n\n", _utils.get_version_text())
 		push_error(_utils.get_bad_version_text())
-		OS.exit_code = 1
-		quit()
+		quit(1)
 	else:
 		_run_gut()

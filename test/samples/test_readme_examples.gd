@@ -280,7 +280,7 @@ class SomeClass:
 
 	func get_nothing():
 		pass
-	func set_nothing(val):
+	func set_nothing(_val):
 		pass
 
 func test_assert_accessors():
@@ -307,8 +307,8 @@ func test_assert_has_method():
 
 # ------------------------------------------------------------------------------
 class ExportClass:
-	export var some_number = 5
-	export(PackedScene) var some_scene
+	@export var some_number = 5
+	@export var some_scene: PackedScene
 	var some_variable = 1
 
 func test_assert_exports():
@@ -340,12 +340,12 @@ func test_illustrate_yield():
 	moving_node.set_position(Vector2(0, 0))
 
 	# While the yield happens, the node should move
-	yield(yield_for(2), YIELD)
+	await yield_for(2).timeout
 	assert_gt(moving_node.get_position().x, 0)
 	assert_between(moving_node.get_position().x, 3.9, 4, 'it should move almost 4 whatevers at speed 2')
 
 func test_illustrate_end_test():
-	yield(yield_for(1), YIELD)
+	await yield_for(1).timeout
 	# we don't have anything to test yet, or at all.  So we
 	# call end_test so that Gut knows all the yielding has
 	# finished.
@@ -364,18 +364,18 @@ class TimedSignaler:
 		var t = Timer.new()
 		add_child(t)
 		t.set_wait_time(_time)
-		t.connect('timeout', self, '_on_timer_timeout')
+		t.timeout.connect(_on_timer_timeout)
 		t.set_one_shot(true)
 		t.start()
 
 	func _on_timer_timeout():
-		emit_signal('the_signal')
+		the_signal.emit()
 
 func test_illustrate_yield_to_with_less_time():
 	var t = TimedSignaler.new(5)
 	add_child_autofree(t)
 	t.start()
-	yield(yield_to(t, 'the_signal', 1), YIELD)
+	await yield_to(t, 'the_signal', 1).timeout
 	# since we setup t to emit after 5 seconds, this will fail because we
 	# only yielded for 1 second vail yield_to
 	assert_signal_emitted(t, 'the_signal', 'This will fail')
@@ -384,7 +384,7 @@ func test_illustrate_yield_to_with_more_time():
 	var t = TimedSignaler.new(1)
 	add_child_autofree(t)
 	t.start()
-	yield(yield_to(t, 'the_signal', 5), YIELD)
+	await yield_to(t, 'the_signal', 5).timeout
 	# since we wait longer than it will take to emit the signal, this assert
 	# will pass
 	assert_signal_emitted(t, 'the_signal', 'This will pass')
@@ -399,7 +399,7 @@ func test_assert_signal_emitted():
 	var obj = SignalObject.new()
 
 	watch_signals(obj)
-	obj.emit_signal('some_signal')
+	obj.some_signal.emit()
 
 	gut.p('-- passing --')
 	assert_signal_emitted(obj, 'some_signal')
@@ -416,7 +416,7 @@ func test_assert_signal_not_emitted():
 	var obj = SignalObject.new()
 
 	watch_signals(obj)
-	obj.emit_signal('some_signal')
+	obj.some_signal.emit()
 
 	gut.p('-- passing --')
 	assert_signal_not_emitted(obj, 'other_signal')
@@ -435,9 +435,9 @@ func test_assert_signal_emitted_with_parameters():
 	watch_signals(obj)
 	# emit the signal 3 times to illustrate how the index works in
 	# assert_signal_emitted_with_parameters
-	obj.emit_signal('some_signal', 1, 2, 3)
-	obj.emit_signal('some_signal', 'a', 'b', 'c')
-	obj.emit_signal('some_signal', 'one', 'two', 'three')
+	obj.some_signal.emit(1, 2, 3)
+	obj.some_signal.emit('a', 'b', 'c')
+	obj.some_signal.emit('one', 'two', 'three')
 
 	gut.p('-- passing --')
 	# Passes b/c the default parameters to check are the last emission of
@@ -462,11 +462,11 @@ func test_assert_signal_emit_count():
 
 	watch_signals(obj_a)
 	watch_signals(obj_b)
-	obj_a.emit_signal('some_signal')
-	obj_a.emit_signal('some_signal')
+	obj_a.some_signal.emit()
+	obj_a.some_signal.emit()
 
-	obj_b.emit_signal('some_signal')
-	obj_b.emit_signal('other_signal')
+	obj_b.some_signal.emit()
+	obj_b.other_signal.emit()
 
 	gut.p('-- passing --')
 	assert_signal_emit_count(obj_a, 'some_signal', 2)
@@ -501,8 +501,8 @@ func test_assert_has_signal():
 func test_get_signal_parameters():
 	var obj = SignalObject.new()
 	watch_signals(obj)
-	obj.emit_signal('some_signal', 1, 2, 3)
-	obj.emit_signal('some_signal', 'a', 'b', 'c')
+	obj.some_signal.emit(1, 2, 3)
+	obj.some_signal.emit('a', 'b', 'c')
 
 	gut.p('-- passing --')
 	# passes because get_signal_parameters returns the most recent emission
@@ -632,7 +632,7 @@ func test_replace_node():
 	# double_me_scene.gd:
 	# extends Node2D
 	#
-	# onready var label = get_node('Label')
+	# @onready var label = get_node('Label')
 	#
 	# func return_hello():
 	# 	return 'hello'
@@ -644,7 +644,7 @@ func test_replace_node():
 	# 	return $MyPanel/MyButton
 	var DOUBLE_ME_SCENE = 'res://test/resources/doubler_test_objects/double_me_scene.tscn'
 
-	var scene = load(DOUBLE_ME_SCENE).instance()
+	var scene = load(DOUBLE_ME_SCENE).instantiate()
 	add_child_autofree(scene)
 	var replace_label = Label.new()
 	replace_node(scene, 'Label', replace_label)
@@ -658,7 +658,7 @@ func test_replace_node():
 	assert_eq(scene.get_button(), replace_button, 'Get button uses $ so this will work.')
 
 	# Failing
-	assert_eq(scene.label, replace_label, 'The variable "label" was set as onready so it will not be updated')
+	assert_eq(scene.label, replace_label, 'The variable "label" was set as @onready so it will not be updated')
 
 class Signaler:
 	signal the_signal
@@ -672,7 +672,7 @@ class Connector:
 func test_assert_connected():
 	var signaler = Signaler.new()
 	var connector  = Connector.new()
-	signaler.connect('the_signal', connector, 'connect_this')
+	signaler.the_signal.connect(connector.connect_this)
 
 	# Passing
 	assert_connected(signaler, connector, 'the_signal')

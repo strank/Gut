@@ -35,10 +35,10 @@ class Printer:
 	# --------------------
 	# Virtual Methods (some have some default behavior)
 	# --------------------
-	func _output(text):
+	func _output(_text):
 		pass
 
-	func format_text(text, fmt):
+	func format_text(text, _fmt):
 		return text
 
 # ------------------------------------------------------------------------------
@@ -49,9 +49,9 @@ class GutGuiPrinter:
 	var _gut = null
 
 	var _colors = {
-			red = Color.red,
-			yellow = Color.yellow,
-			green = Color.green
+			red = Color.RED,
+			yellow = Color.YELLOW,
+			green = Color.GREEN,
 	}
 
 	func _init():
@@ -123,7 +123,7 @@ class ConsolePrinter:
 class TerminalPrinter:
 	extends Printer
 
-	var escape = PoolByteArray([0x1b]).get_string_from_ascii()
+	var escape = PackedByteArray([0x1b]).get_string_from_ascii()
 	var cmd_colors  = {
 		red = escape + '[31m',
 		yellow = escape + '[33m',

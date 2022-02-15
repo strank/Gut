@@ -34,7 +34,7 @@ class InputTracker:
 
 	var _frame_counter = 0
 
-	func _process(delta):
+	func _process(_delta):
 		_frame_counter += 1
 
 	func _input(event):
@@ -120,12 +120,12 @@ class TestTheBasics:
 
 	func test_is_mouse_button_pressed_false_by_default():
 		var sender = InputSender.new()
-		assert_false(sender.is_mouse_button_pressed(BUTTON_LEFT))
+		assert_false(sender.is_mouse_button_pressed(MOUSE_BUTTON_LEFT))
 
 	func test_is_mouse_button_pressed_true_when_button_sent():
 		var sender = InputSender.new()
 		sender.mouse_right_button_down(Vector2(1,1))
-		assert_true(sender.is_mouse_button_pressed(BUTTON_RIGHT))
+		assert_true(sender.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT))
 
 	func test_warns_when_key_down_for_a_pressed_key():
 		var sender = InputSender.new()
@@ -190,7 +190,7 @@ class TestTheBasics:
 		sender._lgr = lgr
 
 		sender.key_down("R").wait(.2)
-		yield(sender, 'idle')
+		await sender.idle
 
 		sender.key_down("R")
 		assert_eq(lgr.get_warnings().size(), 1)
@@ -203,7 +203,7 @@ class TestCreateKeyEvents:
 		var r = autofree(HasInputEvents.new())
 		var sender = InputSender.new(r)
 		sender.key_up("C")
-		assert_eq(r.input_event.scancode, KEY_C)
+		assert_eq(r.input_event.keycode, KEY_C)
 
 	func test_key_up_returns_self():
 		var sender = InputSender.new()
@@ -213,7 +213,7 @@ class TestCreateKeyEvents:
 		var r = autofree(HasInputEvents.new())
 		var sender = InputSender.new(r)
 		sender.key_down(KEY_Q)
-		assert_eq(r.input_event.scancode, KEY_Q)
+		assert_eq(r.input_event.keycode, KEY_Q)
 
 	func test_key_down_returns_self():
 		var sender = InputSender.new()
@@ -351,7 +351,7 @@ class TestMouseMotion:
 			.mouse_motion(Vector2(10, 10), Vector2(50, 50))\
 			.mouse_relative_motion(Vector2(3, 3), Vector2(1, 1))
 
-		assert_eq(r.inputs[-1].speed, Vector2(1, 1))
+		assert_eq(r.inputs[-1].velocity, Vector2(1, 1))
 
 	# inferred tests:  mouse_set_position returns self and it does not send the
 	# event
@@ -418,7 +418,7 @@ class TestSendEvent:
 		pass_test("we got here")
 
 	func test_works_if_no_input_methods_exist_on_object():
-		var r = Reference.new()
+		var r = RefCounted.new()
 		var sender = InputSender.new(r)
 		var event = InputEventKey.new()
 		sender.send_event(event)
@@ -433,7 +433,7 @@ class TestSendEvent:
 
 		var event = InputEventKey.new()
 		event.pressed = true
-		event.scancode = KEY_Y
+		event.keycode = KEY_Y
 		sender.send_event(event)
 
 		assert_true(Input.is_key_pressed(KEY_Y), 'is_pressed')
@@ -470,7 +470,7 @@ class TestSequence:
 		sender.send_event(e1)
 		sender.send_event(e2)
 
-		yield(yield_to(sender, "idle", 2), YIELD)
+		await yield_to(sender, "idle", 2).timeout
 		assert_signal_emitted(sender, 'idle')
 
 	func test_playback_adds_delays():
@@ -489,10 +489,10 @@ class TestSequence:
 
 		assert_eq(r.inputs.size(), 1, "first input sent")
 
-		yield(yield_for(.7), YIELD)
+		await yield_for(.7).timeout
 		assert_eq(r.inputs.size(), 2, "second input sent")
 
-		yield(yield_to(sender, 'idle', 5), YIELD)
+		await yield_to(sender, 'idle', 5).timeout
 		assert_eq(r.inputs.size(), 3, "last input sent")
 
 	func test_can_wait_frames():
@@ -511,10 +511,10 @@ class TestSequence:
 
 		assert_eq(r.inputs.size(), 1, "first input sent")
 
-		yield(yield_for(.7), YIELD)
+		await yield_for(.7).timeout
 		assert_eq(r.inputs.size(), 2, "second input sent")
 
-		yield(yield_to(sender, "idle", 5), YIELD)
+		await yield_to(sender, "idle", 5).timeout
 		assert_eq(r.inputs.size(), 3, "last input sent")
 
 	func test_non_delayed_events_happen_on_the_same_frame_when_delayed_seconds():
@@ -529,10 +529,10 @@ class TestSequence:
 			.wait(.5)\
 			.key_down("c")
 
-		yield(yield_to(sender, "idle", 2), YIELD)
+		await yield_to(sender, "idle", 2).timeout
 		assert_eq(r.input_frames[1], r.input_frames[2])
-		assert_eq(r.inputs[1].scancode, KEY_A)
-		assert_eq(r.inputs[2].scancode, KEY_B)
+		assert_eq(r.inputs[1].keycode, KEY_A)
+		assert_eq(r.inputs[2].keycode, KEY_B)
 
 	func test_non_delayed_events_happen_on_the_same_frame_when_delayed_frames():
 		var r = add_child_autofree(InputTracker.new())
@@ -546,10 +546,10 @@ class TestSequence:
 			.wait_frames(20)\
 			.key_down("c")
 
-		yield(yield_to(sender, "idle", 2), YIELD)
+		await yield_to(sender, "idle", 2).timeout
 		assert_eq(r.input_frames[1], r.input_frames[2])
-		assert_eq(r.inputs[1].scancode, KEY_A)
-		assert_eq(r.inputs[2].scancode, KEY_B)
+		assert_eq(r.inputs[1].keycode, KEY_A)
+		assert_eq(r.inputs[2].keycode, KEY_B)
 
 	func test_mouse_relative_motion_works_with_waits():
 		var r = add_child_autofree(InputTracker.new())
@@ -562,7 +562,7 @@ class TestSequence:
 			.wait_frames(1)\
 			.mouse_relative_motion(Vector2(3, 3))
 
-		yield(yield_to(sender, "idle", 5), YIELD)
+		await yield_to(sender, "idle", 5).timeout
 		assert_eq(r.inputs[2].position, Vector2(6, 6))
 
 
@@ -574,7 +574,7 @@ class TestHoldFor:
 		var sender = InputSender.new(r)
 
 		sender.action_down("jump").hold_for('3f')
-		yield(yield_to(sender, "idle", 5), YIELD)
+		await yield_to(sender, "idle", 5).timeout
 
 		assert_eq(r.inputs.size(), 2, 'input size')
 		var jump_pressed = r.inputs[0].action == "jump" and r.inputs[0].pressed
@@ -587,12 +587,12 @@ class TestHoldFor:
 		var sender = InputSender.new(r)
 
 		sender.key_down("F").hold_for('.5s')
-		yield(yield_to(sender, "idle", 5), YIELD)
+		await yield_to(sender, "idle", 5).timeout
 
 		assert_eq(r.inputs.size(), 2, 'input size')
-		var f_pressed = r.inputs[0].scancode == KEY_F and r.inputs[0].pressed
+		var f_pressed = r.inputs[0].keycode == KEY_F and r.inputs[0].pressed
 		assert_true(f_pressed, "f pressed is action 0")
-		var f_released = r.inputs[1].scancode == KEY_F and !(r.inputs[1].pressed)
+		var _f_released = r.inputs[1].keycode == KEY_F and !(r.inputs[1].pressed)
 
 
 	func test_mouse_left_hold_for():
@@ -600,12 +600,12 @@ class TestHoldFor:
 		var sender = InputSender.new(r)
 
 		sender.mouse_left_button_down(Vector2(1, 1)).hold_for('.5s')
-		yield(yield_to(sender, "idle", 5), YIELD)
+		await yield_to(sender, "idle", 5).timeout
 
 		assert_eq(r.inputs.size(), 2, 'input size')
-		var left_pressed = r.inputs[0].button_index == BUTTON_LEFT and r.inputs[0].pressed
+		var left_pressed = r.inputs[0].button_index == MOUSE_BUTTON_LEFT and r.inputs[0].pressed
 		assert_true(left_pressed, "left mouse pressed")
-		var left_released = r.inputs[1].button_index == BUTTON_LEFT and !(r.inputs[1].pressed)
+		var left_released = r.inputs[1].button_index == MOUSE_BUTTON_LEFT and !(r.inputs[1].pressed)
 		assert_true(left_released, 'left mouse released')
 
 
@@ -631,7 +631,7 @@ class TestReleaseAll:
 		var sender = InputSender.new(r)
 
 		sender.key_down("F").hold_for(.2)
-		yield(sender, "idle")
+		await sender.idle
 		sender.release_all()
 
 		assert_eq(r.inputs.size(), 2)
@@ -648,7 +648,7 @@ class TestReleaseAll:
 		var sender = InputSender.new(r)
 
 		sender.action_down("jump").hold_for(.2)
-		yield(sender, "idle")
+		await sender.idle
 		sender.release_all()
 
 		assert_eq(r.inputs.size(), 2)
@@ -658,14 +658,14 @@ class TestReleaseAll:
 
 		sender.mouse_left_button_down(Vector2(0, 0))
 		sender.release_all()
-		assert_false(Input.is_mouse_button_pressed(BUTTON_LEFT))
+		assert_false(Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT))
 
 	func test_release_all_does_not_release_mouse_buttons_released():
 		var r = add_child_autofree(InputTracker.new())
 		var sender = InputSender.new(r)
 
 		sender.mouse_right_button_down(Vector2(1,1)).hold_for(.2)
-		yield(sender, "idle")
+		await sender.idle
 		sender.release_all()
 
 		assert_eq(r.inputs.size(), 2)
@@ -712,7 +712,7 @@ class TestClear:
 		sender.key_down("Q")
 		sender.clear()
 		sender.hold_for(.1)
-		yield(yield_for(.5), YIELD)
+		await yield_for(.5).timeout
 		assert_eq(r.inputs.size(), 1)
 
 	func test_relative_mouse_motion_uses_0_0_after_clear():
@@ -776,19 +776,19 @@ class TestAtScriptLevel:
 			.key_down("A").hold_for(.2)\
 			.key_down("P")
 
-		yield(_sender, "idle")
+		await _sender.idle
 		assert_false(Input.is_key_pressed(KEY_F))
 
 	func test_two():
 		_sender.key_down("F").hold_for(.1)\
 			.key_down("A").hold_for(.2)
 
-		yield(_sender, "idle")
+		await _sender.idle
 		assert_false(Input.is_key_pressed(KEY_F))
 
 	func test_three():
 		_sender.key_down("F").hold_for(.1)\
 			.key_down("A").hold_for(.2)
 
-		yield(_sender, "idle")
+		await _sender.idle
 		assert_false(Input.is_key_pressed(KEY_F))

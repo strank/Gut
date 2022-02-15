@@ -48,7 +48,7 @@ func when_passed(p1=NOT_SET,p2=NOT_SET,p3=NOT_SET,p4=NOT_SET,p5=NOT_SET,p6=NOT_S
 	var idx = 0
 	while(idx < parameters.size()):
 		if(str(parameters[idx]) == NOT_SET):
-			parameters.remove(idx)
+			parameters.remove_at(idx)
 		else:
 			idx += 1
 	return self
