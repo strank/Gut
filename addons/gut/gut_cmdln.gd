@@ -261,7 +261,7 @@ func _run_gut():
 			_final_opts = opt_resolver.get_resolved_values();
 			_gut_config.options = _final_opts
 
-			var runner = GutRunner.instance()
+			var runner = GutRunner.instantiate()
 			runner.set_cmdln_mode(true)
 			runner.set_gut_config(_gut_config)
 

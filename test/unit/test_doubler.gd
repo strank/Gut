@@ -548,21 +548,21 @@ class TestDoubleSingleton:
 		var doubled = _doubler.double_singleton("Input").new()
 		assert_eq(doubled.CURSOR_VSPLIT, Input.CURSOR_VSPLIT)
 
-	func test_partial_double_gets_wired_properties():
-		var doubled = _doubler.partial_double_singleton("ARVRServer").new()
-		assert_eq(doubled.world_scale, 1.0, "property")
-		assert_eq(doubled.get_world_scale(), 1.0, "accessor")
+#	func test_partial_double_gets_wired_properties():
+#		var doubled = _doubler.partial_double_singleton("ARVRServer").new()
+#		assert_eq(doubled.world_scale, 1.0, "property")
+#		assert_eq(doubled.get_world_scale(), 1.0, "accessor")
 
-	func test_partial_double_setters_are_wired_to_set_source_property():
-		var doubled = _doubler.partial_double_singleton("ARVRServer").new()
-		doubled.world_scale = 0.5
-		assert_eq(ARVRServer.get_world_scale(), 0.5, "accessor")
-		# make sure to put it back to what it was, who knows what it does.
-		ARVRServer.world_scale = 1.0
+#	func test_partial_double_setters_are_wired_to_set_source_property():
+#		var doubled = _doubler.partial_double_singleton("ARVRServer").new()
+#		doubled.world_scale = 0.5
+#		assert_eq(ARVRServer.get_world_scale(), 0.5, "accessor")
+#		# make sure to put it back to what it was, who knows what it does.
+#		ARVRServer.world_scale = 1.0
 
-	func test_double_gets_unwired_properties_by_default():
-		var doubled = _doubler.double_singleton("ARVRServer").new()
-		assert_null(doubled.world_scale)
+#	func test_double_gets_unwired_properties_by_default():
+#		var doubled = _doubler.double_singleton("ARVRServer").new()
+#		assert_null(doubled.world_scale)
 
 	# These singletons were found using print_instanced_ClassDB_classes in
 	# scratch/get_info.gd and are most likely the only singletons that

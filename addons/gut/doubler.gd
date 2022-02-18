@@ -111,6 +111,7 @@ class ScriptMethods:
 class ObjectInfo:
 	var _path = null
 	var _subpaths = []
+	var _utils = load('res://addons/gut/utils.gd').get_instance()
 	var _lgr = _utils.get_logger()
 	var _method_strategy = null
 	var make_partial_double = false
@@ -182,7 +183,7 @@ class ObjectInfo:
 		var inst = native_class.new()
 		_native_class_name = inst.get_class()
 		_path = _native_class_name
-		if(!inst is Reference):
+		if(!inst is RefCounted):
 			inst.free()
 
 
@@ -454,11 +455,11 @@ func _write_file(obj_info, dest_path, override_path=null):
 	f.store_string(base_script)
 
 	for i in range(script_methods.local_methods.size()):
-		f.store_string(_get_func_text(script_methods.local_methods[i], path, super_name))
+		f.store_string(_get_func_text(script_methods.local_methods[i], path))
 
 	for i in range(script_methods.built_ins.size()):
 		_stub_to_call_super(obj_info, script_methods.built_ins[i].name)
-		f.store_string(_get_func_text(script_methods.built_ins[i], path, super_name))
+		f.store_string(_get_func_text(script_methods.built_ins[i], path))
 
 	f.close()
 	if(_print_source):
@@ -518,7 +519,7 @@ func _get_methods(object_info):
 			# 65 is a magic number for methods in script, though documentation
 			# says 64.  This picks up local overloads of base class methods too.
 			if(methods[j].flags != 65 and !_ignored_methods.has(object_info.get_path(), methods[j]['name'])
-					and !methods[i]['name'].begins_with('@')):
+					and !methods[j]['name'].begins_with('@')):
 				script_methods.add_built_in_method(methods[j])
 
 	return script_methods
@@ -531,12 +532,12 @@ func _get_inst_id_ref_str(inst):
 	return ref_str
 
 
-func _get_func_text(method_hash, path, super=""):
+func _get_func_text(method_hash, path):
 	var override_count = null;
 	if(_stubber != null):
 		override_count = _stubber.get_parameter_count(path, method_hash.name)
 
-	var text = _method_maker.get_function_text(method_hash, path, override_count, super) + "\n"
+	var text = _method_maker.get_function_text(method_hash, path, override_count) + "\n"
 
 	return text
 

@@ -22,8 +22,8 @@ var _use_viewport = false
 var _should_draw_outline = false
 
 
-onready var _test_parent = $ColorRect/ViewportContainer/Viewport
-onready var _color_rect = $ColorRect
+@onready var _test_parent = $ColorRect/ViewportContainer/Viewport
+@onready var _color_rect = $ColorRect
 
 
 func _ready():
@@ -41,7 +41,7 @@ func _ready():
 
 	_use_viewport = _gut_config.options.use_viewport
 
-	_color_rect.connect('draw', self, '_on_color_rect_draw')
+	_color_rect.draw.connect(_on_color_rect_draw)
 	_setup_screen()
 
 	# The command line will call run_tests on its own.  When used from the panel

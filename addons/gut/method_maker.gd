@@ -89,15 +89,15 @@ func _init():
 	_supported_defaults[TYPE_PACKED_VECTOR2_ARRAY] = ''
 	_supported_defaults[TYPE_RID] = ''
 
-	# These require a prefix for whatever default is provided
+	# These require a prefix for whatever default is provided ### TODO: this changed a lot in godot 4!
 	_supported_defaults[TYPE_VECTOR2] = 'Vector2'
 	_supported_defaults[TYPE_RECT2] = 'Rect2'
 	_supported_defaults[TYPE_VECTOR3] = 'Vector3'
 	_supported_defaults[TYPE_COLOR] = 'Color'
 	_supported_defaults[TYPE_TRANSFORM2D] = 'Transform2D'
-	_supported_defaults[TYPE_TRANSFORM] = 'Transform'
-	_supported_defaults[TYPE_INT_ARRAY] = 'PoolIntArray'
-	_supported_defaults[TYPE_REAL_ARRAY] = 'PoolRealArray'
+	_supported_defaults[TYPE_TRANSFORM3D] = 'Transform3D'
+	_supported_defaults[TYPE_PACKED_INT64_ARRAY] = 'PoolIntArray'
+	_supported_defaults[TYPE_PACKED_FLOAT64_ARRAY] = 'PoolRealArray'
 
 # ###############
 # Private
@@ -138,7 +138,7 @@ func _make_arg_array(method_meta, override_size):
 						dflt_text = str(_supported_defaults[t], 'null')
 					else:
 						dflt_text = str(_supported_defaults[t], str(method_meta.default_args[dflt_idx]).to_lower())
-				elif(t == TYPE_TRANSFORM):
+				elif(t == TYPE_TRANSFORM3D):
 					#value will be 4 Vector3 and look like: 1, 0, 0, 0, 1, 0, 0, 0, 1 - 0, 0, 0
 					var sections = str(method_meta.default_args[dflt_idx]).split("-")
 					var vecs = sections[0].split(",")
@@ -157,7 +157,7 @@ func _make_arg_array(method_meta, override_size):
 					dflt_text = str(_supported_defaults[t], "(", vectors, ")")
 				elif(t == TYPE_RID):
 					dflt_text = str(_supported_defaults[t], 'null')
-				elif(t in [TYPE_REAL_ARRAY, TYPE_INT_ARRAY]):
+				elif(t in [TYPE_PACKED_FLOAT64_ARRAY, TYPE_PACKED_INT64_ARRAY]):
 					dflt_text = str(_supported_defaults[t], "()")
 
 				# Everything else puts the prefix (if one is there) form _supported_defaults
@@ -259,7 +259,7 @@ func get_function_text(meta, _path=null, override_size=null):
 			"func_decleration":decleration,
 			"method_name":meta.name,
 			"param_array":param_array,
-			"super_call":_get_super_call_text(meta.name, args, super_name)
+			"super_call":_get_super_call_text(meta.name, args)
 		})
 
 	return text
