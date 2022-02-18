@@ -62,18 +62,18 @@ func _setup_screen():
 	_color_rect.color = _gut_config.options.viewport_bg_color
 
 	if(_viewport_size == null):
-		_viewport_size = get_tree().root.get_size_override()
+		_viewport_size = get_tree().root.size
 
 	if(_resolution != null):
 		if(_resolution.x < 200):
 			_resolution.x = 200
 		if(_resolution.y < 200):
 			_resolution.y = 200
-		get_tree().root.set_size_override(false, _resolution)
+		get_tree().root.size = _resolution
 		OS.window_size = _resolution
 		get_tree().set_screen_stretch(SceneTree.STRETCH_MODE_DISABLED,  SceneTree.STRETCH_MODE_DISABLED, _resolution)
 	else:
-		_resolution = get_tree().root.get_size_override()
+		_resolution = get_tree().root.size
 
 	if(_viewport_size != null):
 		_color_rect.rect_size = _viewport_size
