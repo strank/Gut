@@ -18,7 +18,7 @@ class DirectoryCtrl:
 		_dialog.resizable = true
 		_dialog.connect("dir_selected", self, '_on_selected')
 		_dialog.connect("file_selected", self, '_on_selected')
-		_dialog.rect_size = Vector2(1000, 700)
+		_dialog.size = Vector2(1000, 700)
 
 	func _on_selected(path):
 		set_text(path)
@@ -137,7 +137,7 @@ func _new_row(key, disp_text, value_ctrl, hint):
 	ctrl.add_child(value_ctrl)
 
 	var rpad = CenterContainer.new()
-	rpad.rect_min_size.x = 5
+	rpad.minimum_size.x = 5
 	ctrl.add_child(rpad)
 
 	return ctrl
@@ -265,7 +265,7 @@ func _on_ctrl_focus_unhighlight(which):
 
 
 func _on_title_cell_draw(which):
-	which.draw_rect(Rect2(Vector2(0, 0), which.rect_size), Color(0, 0, 0, .15))
+	which.draw_rect(Rect2(Vector2(0, 0), which.size), Color(0, 0, 0, .15))
 
 
 # ------------------

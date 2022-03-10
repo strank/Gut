@@ -51,7 +51,7 @@ margin_left = 2.64868
 margin_top = 1.05945
 margin_right = 2.64862
 margin_bottom = 1.05945
-rect_min_size = Vector2( 0, 300 )
+minimum_size = Vector2( 0, 300 )
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
@@ -74,7 +74,7 @@ __meta__ = {
 [node name="RunAll" type="Button" parent="layout/ControlBar"]
 margin_right = 150.0
 margin_bottom = 40.0
-rect_min_size = Vector2( 150, 0 )
+minimum_size = Vector2( 150, 0 )
 hint_tooltip = "Run all test scripts in the suite."
 size_flags_vertical = 11
 shortcut = SubResource( 9 )
@@ -109,7 +109,7 @@ anchor_bottom = 0.0
 margin_left = 217.0
 margin_right = 456.0
 margin_bottom = 40.0
-rect_min_size = Vector2( 0, 40 )
+minimum_size = Vector2( 0, 40 )
 
 [node name="CenterContainer2" type="CenterContainer" parent="layout/ControlBar"]
 margin_left = 460.0
@@ -157,12 +157,12 @@ size_flags_vertical = 3
 [node name="ControlBar" type="HBoxContainer" parent="layout/RSplit/CResults"]
 margin_right = 611.0
 margin_bottom = 35.0
-rect_min_size = Vector2( 0, 35 )
+minimum_size = Vector2( 0, 35 )
 
 [node name="Light" type="Control" parent="layout/RSplit/CResults/ControlBar"]
 margin_right = 30.0
 margin_bottom = 35.0
-rect_min_size = Vector2( 30, 30 )
+minimum_size = Vector2( 30, 30 )
 
 [node name="Passing" type="HBoxContainer" parent="layout/RSplit/CResults/ControlBar"]
 visible = false
@@ -173,7 +173,7 @@ margin_bottom = 35.0
 [node name="Sep" type="ColorRect" parent="layout/RSplit/CResults/ControlBar/Passing"]
 margin_right = 2.0
 margin_bottom = 35.0
-rect_min_size = Vector2( 2, 0 )
+minimum_size = Vector2( 2, 0 )
 
 [node name="label" type="Label" parent="layout/RSplit/CResults/ControlBar/Passing"]
 margin_left = 6.0
@@ -198,7 +198,7 @@ margin_bottom = 35.0
 [node name="Sep" type="ColorRect" parent="layout/RSplit/CResults/ControlBar/Failing"]
 margin_right = 2.0
 margin_bottom = 35.0
-rect_min_size = Vector2( 2, 0 )
+minimum_size = Vector2( 2, 0 )
 
 [node name="label" type="Label" parent="layout/RSplit/CResults/ControlBar/Failing"]
 margin_left = 6.0
@@ -223,7 +223,7 @@ margin_bottom = 35.0
 [node name="Sep" type="ColorRect" parent="layout/RSplit/CResults/ControlBar/Pending"]
 margin_right = 2.0
 margin_bottom = 35.0
-rect_min_size = Vector2( 2, 0 )
+minimum_size = Vector2( 2, 0 )
 
 [node name="label" type="Label" parent="layout/RSplit/CResults/ControlBar/Pending"]
 margin_left = 6.0
@@ -248,7 +248,7 @@ margin_bottom = 35.0
 [node name="Sep" type="ColorRect" parent="layout/RSplit/CResults/ControlBar/Orphans"]
 margin_right = 2.0
 margin_bottom = 35.0
-rect_min_size = Vector2( 2, 0 )
+minimum_size = Vector2( 2, 0 )
 
 [node name="label" type="Label" parent="layout/RSplit/CResults/ControlBar/Orphans"]
 margin_left = 6.0
@@ -273,7 +273,7 @@ margin_bottom = 35.0
 [node name="Sep" type="ColorRect" parent="layout/RSplit/CResults/ControlBar/Errors"]
 margin_right = 2.0
 margin_bottom = 35.0
-rect_min_size = Vector2( 2, 0 )
+minimum_size = Vector2( 2, 0 )
 
 [node name="label" type="Label" parent="layout/RSplit/CResults/ControlBar/Errors"]
 margin_left = 6.0
@@ -299,7 +299,7 @@ margin_bottom = 35.0
 [node name="Sep" type="ColorRect" parent="layout/RSplit/CResults/ControlBar/Warnings"]
 margin_right = 2.0
 margin_bottom = 35.0
-rect_min_size = Vector2( 2, 0 )
+minimum_size = Vector2( 2, 0 )
 
 [node name="label" type="Label" parent="layout/RSplit/CResults/ControlBar/Warnings"]
 margin_left = 6.0
@@ -355,7 +355,7 @@ selection_enabled = true
 margin_left = 623.0
 margin_right = 1023.0
 margin_bottom = 555.0
-rect_min_size = Vector2( 400, 0 )
+minimum_size = Vector2( 400, 0 )
 mouse_filter = 1
 size_flags_vertical = 3
 

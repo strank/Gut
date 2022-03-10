@@ -22,7 +22,7 @@ __meta__ = {
 }
 
 [node name="Gut" type="Control" parent="."]
-rect_min_size = Vector2(740, 250)
+minimum_size = Vector2(740, 250)
 script = ExtResource( "2" )
 __meta__ = {
 "_edit_use_anchors_": false

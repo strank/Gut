@@ -7,7 +7,7 @@ anchor_right = 0.123
 anchor_bottom = 0.04
 margin_right = 33.048
 margin_bottom = 1.0
-rect_min_size = Vector2( 125, 25 )
+minimum_size = Vector2( 125, 25 )
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
@@ -33,13 +33,13 @@ valign = 1
 margin_left = 54.0
 margin_right = 64.0
 margin_bottom = 25.0
-rect_min_size = Vector2( 10, 0 )
+minimum_size = Vector2( 10, 0 )
 
 [node name="SetButton" type="Button" parent="Layout"]
 margin_left = 68.0
 margin_right = 128.0
 margin_bottom = 25.0
-rect_min_size = Vector2( 60, 0 )
+minimum_size = Vector2( 60, 0 )
 text = "Set"
 __meta__ = {
 "_edit_use_anchors_": false
@@ -50,7 +50,7 @@ visible = false
 margin_left = 82.0
 margin_right = 142.0
 margin_bottom = 25.0
-rect_min_size = Vector2( 60, 0 )
+minimum_size = Vector2( 60, 0 )
 text = "Save"
 __meta__ = {
 "_edit_use_anchors_": false
@@ -61,7 +61,7 @@ visible = false
 margin_left = 82.0
 margin_right = 142.0
 margin_bottom = 25.0
-rect_min_size = Vector2( 60, 0 )
+minimum_size = Vector2( 60, 0 )
 text = "Cancel"
 __meta__ = {
 "_edit_use_anchors_": false
@@ -71,7 +71,7 @@ __meta__ = {
 margin_left = 132.0
 margin_right = 192.0
 margin_bottom = 25.0
-rect_min_size = Vector2( 60, 0 )
+minimum_size = Vector2( 60, 0 )
 text = "Clear"
 
 [connection signal="pressed" from="Layout/SetButton" to="." method="_on_SetButton_pressed"]

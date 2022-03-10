@@ -212,7 +212,7 @@ func _on_BottomPanelShortcuts_popup_hide():
 
 func _on_Light_draw():
 	var l = _ctrls.light
-	l.draw_circle(Vector2(l.rect_size.x / 2, l.rect_size.y / 2), l.rect_size.x / 2, _light_color)
+	l.draw_circle(Vector2(l.size.x / 2, l.size.y / 2), l.size.x / 2, _light_color)
 
 
 func _on_RunAtCursor_run_tests(what):

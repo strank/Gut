@@ -57,8 +57,8 @@ func _setup_screen():
 		_color_rect.visible = false
 		return
 
-	_test_parent.size = _test_parent.get_parent().rect_size
-	_color_rect.rect_position = Vector2(0, 0)
+	_test_parent.size = _test_parent.get_parent().size
+	_color_rect.position = Vector2(0, 0)
 	_color_rect.color = _gut_config.options.viewport_bg_color
 
 	if(_viewport_size == null):
@@ -76,13 +76,13 @@ func _setup_screen():
 		_resolution = get_tree().root.size
 
 	if(_viewport_size != null):
-		_color_rect.rect_size = _viewport_size
+		_color_rect.size = _viewport_size
 		_test_parent.size = _viewport_size
 
 
 	if(_viewport_size.x < _resolution.x):
-		_color_rect.rect_position.x = _resolution.x - _viewport_size.x - 5
-		_color_rect.rect_position.y += 5
+		_color_rect.position.x = _resolution.x - _viewport_size.x - 5
+		_color_rect.position.y += 5
 		_should_draw_outline = true
 		_color_rect.update()
 
