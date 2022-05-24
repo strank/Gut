@@ -137,7 +137,7 @@ func get_defaults_and_types(method_meta):
 func class_db_stuff():
 	print(ClassDB.class_exists('Node2D'))
 	print('category = ',  ClassDB.class_get_category('Node2D'))
-	#print(str(JSON.print(ClassDB.class_get_method_list('Node2D'), ' ')))
+	#print(str(JSON.new().stringify(ClassDB.class_get_method_list('Node2D'), ' ')))
 	# print(ClassDB.class_get_integer_constant_list('Node2D'))
 	# print(ClassDB.get_class_list())
 
@@ -292,7 +292,7 @@ func _init():
 	#print_method_info(ExtendsNode2D)
 
 	#var _methods = obj.get_method_list()
-	#print(str(JSON.print(methods, ' ')))
+	#print(str(JSON.new().stringify(methods, ' ')))
 	# for i in range(methods.size()):
 	# 	if(methods[i][DEFAULT_ARGS].size() > 0):
 	# 		pass#print(get_defaults_and_types(methods[i]))

@@ -46,7 +46,7 @@ static func INSTANCE_NAME():
 static func get_root_node():
 	var main_loop = Engine.get_main_loop()
 	if(main_loop != null):
-		return main_loop.root
+		return main_loop.root # TODO: this does not exist in 4.0, root is on SceneTree
 	else:
 		push_error('No Main Loop Yet')
 		return null
@@ -375,7 +375,7 @@ func are_datatypes_same(got, expected):
 
 
 func pretty_print(dict):
-	print(str(JSON.print(dict, ' ')))
+	print(str(JSON.new().stringify(dict, ' ')))
 
 
 func get_script_text(obj):

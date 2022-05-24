@@ -99,7 +99,7 @@ func _load_options_from_config_file(file_path, into):
 
 
 func write_options(path):
-	var content = JSON.print(options, ' ')
+	var content = JSON.new().stringify(options, ' ')
 
 	var f = File.new()
 	var result = f.open(path, f.WRITE)

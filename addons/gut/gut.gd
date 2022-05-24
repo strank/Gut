@@ -529,7 +529,7 @@ func _export_junit_xml():
 
 	if(_junit_xml_timestamp):
 		var ext = "." + output_file.get_extension()
-		output_file = output_file.replace(ext, str("_", OS.get_unix_time(), ext))
+		output_file = output_file.replace(ext, str("_", Time.get_unix_time_from_system(), ext))
 
 	var f_result = exporter.write_file(self, output_file)
 	if(f_result == OK):

@@ -214,14 +214,16 @@ option (option priority:  command-line, .gutconfig, default)."""
 	resolved.erase("config_file")
 	resolved.erase("show_help")
 
+	var json = JSON.new()
+
 	print("Here's a config with all the properties set based off of your current command and config.")
-	print(JSON.print(resolved, '  '))
+	print(JSON.new().stringify(resolved, '  '))
 
 	for key in resolved:
 		resolved[key] = null
 
 	print("\n\nAnd here's an empty config for you fill in what you want.")
-	print(JSON.print(resolved, ' '))
+	print(JSON.new().stringify(resolved, ' '))
 
 
 # parse options and run Gut
